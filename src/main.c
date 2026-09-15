@@ -2,12 +2,12 @@
 
 int	main(void)
 {
-	t_game	game;
+  void  *mlx_ptr;
+  void  *win_ptr;
 
-	game.mlx = NULL;
-	game.win = NULL;
-	if (init_mlx(&game) != 0)
-		return (1);
-	mlx_loop(game.mlx);
-	return (0);
+  mlx_ptr = mlx_init();
+  win_ptr = mlx_new_window(mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "CUB3D");
+  mlx_pixel_put(mlx_ptr, win_ptr, 100, 100, 0xFF0000);
+  mlx_loop(mlx_ptr);
+  return (0);
 }
