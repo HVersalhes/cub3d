@@ -17,20 +17,29 @@ MLX_DIR = minilibx
 MLX_LIB = $(MLX_DIR)/libmlx.a
 
 CFLAGS = -Wall -Wextra -Werror -Iinclude -Iminilibx
-LDFLAGS = -L$(MLX_DIR) -lmlx -lXext -lX11
+LDFLAGS = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm -lz
 
-SRC = src/main.c
-OBJ = $(SRC:.c=.o)
+SRC_DIR = src
+OBJ_DIR = obj
+
+SRC = $(SRC_DIR)/main.c
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 all: $(MLX_LIB) $(NAME)
 
 $(MLX_LIB):
 	$(MAKE) -C $(MLX_DIR)
 
-$(NAME): $(OBJ)
-	$(CC) $(OBJ) $(LDFLAGS) -o $(NAME)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+	
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(NAME): $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
 clean:
-	rm -f $(OBJ)
+	rm -rf $(OBJ_DIR)
 	$(MAKE) -C $(MLX_DIR) clean
 
 fclean: clean
