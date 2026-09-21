@@ -25,7 +25,7 @@ OBJ = $(SRC:.c=.o)
 all: $(MLX_LIB) $(NAME)
 
 $(MLX_LIB):
-	$(MAKE) -C $(MLX_DIR) CC=gcc-12
+	$(MAKE) -C $(MLX_DIR)
 
 $(NAME): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(NAME)
