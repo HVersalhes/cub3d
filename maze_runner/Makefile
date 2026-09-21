@@ -1,1 +1,0 @@
-NAME = cub3d
