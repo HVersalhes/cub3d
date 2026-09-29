@@ -1,0 +1,11 @@
+# Ficheiros objeto e binários do C
+*.o
+*.a
+cub3D
+
+# Ficheiros temporários de rede (NFS / 42)
+.nfs*
+
+# Configurações de editores e IDEs
+.vscode/
+.DS_Store
