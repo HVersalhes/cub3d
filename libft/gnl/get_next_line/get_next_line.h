@@ -1,28 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2026/09/21 18:35:36 by hcosta            #+#    #+#             */
+/*   Updated: 2026/09/21 18:35:40 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
-# include "mlx.h"
-# include <math.h>
+# include <stddef.h>
 # include <unistd.h>
 # include <stdlib.h>
-# include "cub3d_structs.h"
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
 
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
+char	*get_next_line(int fd);
+size_t	ft_strlen_gnl(const char *s);
+char	*ft_strchr_gnl(char *s, int c);
+char	*ft_strjoin_gnl(char *s1, char *s2);
 
 #endif

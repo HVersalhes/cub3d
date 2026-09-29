@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2025/06/17 17:12:48 by hcosta            #+#    #+#             */
+/*   Updated: 2025/07/02 17:14:51 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "libft.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+{
+	size_t	src_len;
+	size_t	i;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!src)
+		return (0);
+	src_len = ft_strlen(src);
+	if (!dst || dstsize == 0)
+		return (src_len);
+	i = 0;
+	while (src[i] && i < (dstsize - 1))
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = '\0';
+	return (src_len);
+}

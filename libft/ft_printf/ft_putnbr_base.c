@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_putnbr_base.c                                    +:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
+/*   Created: 2026/09/25 21:22:05 by hcosta            #+#    #+#             */
 /*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "ft_printf.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+int	ft_putnbr_base(unsigned long long nbr, char *base)
+{
+	int					len;
+	unsigned long long	base_len;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!base)
+		return (0);
+	base_len = 0;
+	while (base[base_len])
+		base_len++;
+	if (base_len < 2)
+		return (0);
+	len = 0;
+	if (nbr >= base_len)
+		len += ft_putnbr_base(nbr / base_len, base);
+	len += ft_putchar(base[nbr % base_len]);
+	return (len);
+}
