@@ -2,7 +2,7 @@
 *.o
 *.a
 cub3D
-
+minilibx/
 # Ficheiros temporários de rede (NFS / 42)
 .nfs*
 
