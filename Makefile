@@ -35,7 +35,13 @@ $(LIBFT_LIB):
 	$(MAKE) -C $(LIBFT_DIR)
 
 $(MLX_LIB):
-	$(MAKE) -C $(MLX_DIR) CC=gcc-12
+	$(MAKE) -C $(MLX_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+	
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
