@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2025/07/02 17:10:57 by hcosta            #+#    #+#             */
+/*   Updated: 2025/07/02 17:11:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "libft.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	len1;
+	size_t	len2;
+	char	*result;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!s1 || !s2)
+		return (NULL);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	result = (char *)malloc(len1 + len2 + 1);
+	if (!result)
+		return (NULL);
+	ft_memcpy(result, s1, len1);
+	ft_memcpy(result + len1, s2, len2);
+	result[len1 + len2] = '\0';
+	return (result);
+}

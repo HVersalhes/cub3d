@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2025/06/13 17:04:50 by hcosta            #+#    #+#             */
+/*   Updated: 2025/06/24 15:57:55 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "libft.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+void	*ft_memcpy(void *dest, const void *src, size_t n)
+{
+	unsigned char		*d;
+	const unsigned char	*s;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!dest && !src)
+		return (NULL);
+	d = ((unsigned char *)dest);
+	s = ((const unsigned char *)src);
+	while (n--)
+		*d++ = *s++;
+	return (dest);
+}

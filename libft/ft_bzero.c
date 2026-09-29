@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_bzero.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2025/06/13 13:43:46 by hcosta            #+#    #+#             */
+/*   Updated: 2025/06/13 17:04:01 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "libft.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+void	ft_bzero(void *s, size_t n)
+{
+	unsigned char	*ptr;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!s && n > 0)
+		return ;
+	ptr = (unsigned char *)s;
+	while (n > 0)
+	{
+		*ptr = 0;
+		ptr++;
+		n--;
+	}
+}

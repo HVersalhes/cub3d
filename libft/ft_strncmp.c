@@ -1,28 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Created: 2025/06/18 14:56:04 by hcosta            #+#    #+#             */
+/*   Updated: 2025/06/30 19:40:06 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "libft.h"
 
-# include "mlx.h"
-# include <math.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include "cub3d_structs.h"
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
 
-# define WIN_WIDTH 1200
-# define WIN_HEIGHT 800
-
-void	error_exit(const char *msg);
-int		init_mlx(t_game *game);
-
-#endif
+	if (!s1 || !s2)
+		return (-1000);
+	if (n == 0)
+		return (0);
+	i = 0;
+	while (i < n && s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	if (i == n)
+		return (0);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
