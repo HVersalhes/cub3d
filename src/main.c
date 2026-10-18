@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/25 21:22:54 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 00:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int argc, char **argv)
 	parse_cub_file(argv[1], &game);
 	init_player(&game);
 	init_mlx(&game);
+	init_textures(&game);
 	mlx_hook(game.win_ptr, 2, 1L << 0, key_press_handler, &game);
 	mlx_hook(game.win_ptr, 3, 1L << 1, key_release_handler, &game);
 	mlx_hook(game.win_ptr, 17, 0, close_game, &game);

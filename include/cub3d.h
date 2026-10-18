@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 00:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ int		game_loop(t_game *game);
 void	render_frame(t_game *game);
 void	render_ceiling_floor(t_game *game);
 void	perform_raycasting(t_game *game);
+void	draw_textured_wall_slice(t_game *game, t_ray *ray, int x);
+int		get_wall_texture_index(t_ray *ray);
 void	my_pixel_put(t_img *img, int x, int y, int color);
 int		get_texture_pixel(t_img *img, int x, int y);
 

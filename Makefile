@@ -6,7 +6,7 @@
 #    By: hcosta <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/09/15 18:12:12 by hcosta            #+#    #+#              #
-#    Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr        #
+#    Updated: 2026/10/19 00:30:00 by hcosta           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/init/init_data.c \
        $(SRC_DIR)/init/init_mlx.c \
        $(SRC_DIR)/init/init_player.c \
+       $(SRC_DIR)/init/init_textures.c \
        $(SRC_DIR)/parsing/parse_file.c \
        $(SRC_DIR)/parsing/parse_textures.c \
        $(SRC_DIR)/parsing/parse_colors.c \
@@ -41,6 +42,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/raycasting/wall_distance.c \
        $(SRC_DIR)/render/render_floor_ceiling.c \
        $(SRC_DIR)/render/render_frame.c \
+       $(SRC_DIR)/render/texture_mapping.c \
        $(SRC_DIR)/events/keyboard.c \
        $(SRC_DIR)/player/movement.c \
        $(SRC_DIR)/player/rotation.c \
