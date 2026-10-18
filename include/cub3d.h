@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:06:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ void	parse_map(int fd, char *first_line, t_game *game);
 void	validate_map(t_game *game);
 
 /* raycasting & render */
+void	calculate_ray_vector(t_game *game, t_ray *ray, int x);
+void	init_ray_step(t_game *game, t_ray *ray);
+void	execute_dda(t_game *game, t_ray *ray);
+void	calculate_wall_projection(t_game *game, t_ray *ray, int x);
 int		game_loop(t_game *game);
 void	render_frame(t_game *game);
 void	render_ceiling_floor(t_game *game);
