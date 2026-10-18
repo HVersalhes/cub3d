@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 20:06:40 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@ int		get_texture_pixel(t_img *img, int x, int y);
 
 /* player & events */
 void	update_player_movement(t_game *game);
+void	update_player_rotation(t_game *game);
+void	rotate_player(t_game *game, double angle);
+int		is_valid_walk_position(t_game *game, double x, double y);
 int		key_press_handler(int keycode, t_game *game);
 int		key_release_handler(int keycode, t_game *game);
 
