@@ -6,7 +6,7 @@
 #    By: hcosta <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/09/15 18:12:12 by hcosta            #+#    #+#              #
-#    Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr        #
+#    Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,9 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/render/render_floor_ceiling.c \
        $(SRC_DIR)/render/render_frame.c \
        $(SRC_DIR)/events/keyboard.c \
-       $(SRC_DIR)/player/movement.c
+       $(SRC_DIR)/player/movement.c \
+       $(SRC_DIR)/player/rotation.c \
+       $(SRC_DIR)/player/collision.c
 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
