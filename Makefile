@@ -6,7 +6,7 @@
 #    By: hcosta <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/09/15 18:12:12 by hcosta            #+#    #+#              #
-#    Updated: 2026/10/19 00:16:00 by hcosta           ###   ########.fr        #
+#    Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,15 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/exit/free.c \
        $(SRC_DIR)/init/init_data.c \
        $(SRC_DIR)/init/init_mlx.c \
+       $(SRC_DIR)/init/init_player.c \
        $(SRC_DIR)/parsing/parse_file.c \
        $(SRC_DIR)/parsing/parse_textures.c \
        $(SRC_DIR)/parsing/parse_colors.c \
        $(SRC_DIR)/parsing/parse_map.c \
        $(SRC_DIR)/parsing/validate_map.c \
+       $(SRC_DIR)/raycasting/ray_direction.c \
+       $(SRC_DIR)/raycasting/dda_algorithm.c \
+       $(SRC_DIR)/raycasting/wall_distance.c \
        $(SRC_DIR)/render/render_floor_ceiling.c \
        $(SRC_DIR)/render/render_frame.c \
        $(SRC_DIR)/events/keyboard.c \
