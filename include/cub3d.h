@@ -57,6 +57,7 @@ void	init_player(t_game *game);
 void	init_textures(t_game *game);
 
 /* parsing */
+char	*get_next_line(int fd);
 void	parse_cub_file(const char *file_path, t_game *game);
 int		parse_texture_line(char *line, t_game *game);
 int		parse_color_line(char *line, t_game *game);
