@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 13:22:46 by hcosta            #+#    #+#             */
-/*   Updated: 2026/09/25 21:23:29 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 00:12:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,12 @@ typedef struct s_map
 	int		player_spawn_y;
 }	t_map;
 
+typedef struct s_map_node
+{
+	char				*line;
+	struct s_map_node	*next;
+}	t_map_node;
+
 typedef struct s_ray
 {
 	double	camera_x;
@@ -103,8 +109,8 @@ typedef struct s_game
 	t_map		map;
 	t_player	player;
 	t_keys		keys;
-	t_texture	textures[4];	// 0: NO, 1: SO, 2: WE, 3: EA
-	double		*z_buffer;	// Para os bónus de sprites
+	t_texture	textures[4];
+	double		*z_buffer;
 }	t_game;
 
 #endif
