@@ -95,6 +95,22 @@ static char	*update_stash(char *stash)
 	return (new_stash);
 }
 
+static void	ft_stash_clear(t_stash **stash)
+{
+	t_stash	*node;
+	t_stash	*next;
+
+	node = *stash;
+	while (node)
+	{
+		next = node->next;
+		free(node->buf);
+		free(node);
+		node = next;
+	}
+	*stash = NULL;
+}
+
 char	*get_next_line(int fd)
 {
 	static t_stash	*stash;
@@ -102,7 +118,10 @@ char	*get_next_line(int fd)
 	char			*line;
 
 	if (fd < 0)
+	{
+		ft_stash_clear(&stash);
 		return (NULL);
+	}
 	node = ft_stash_get(&stash, fd);
 	if (!node)
 		return (NULL);

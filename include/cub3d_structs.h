@@ -111,6 +111,7 @@ typedef struct s_game
 	t_keys		keys;
 	t_texture	textures[4];
 	double		*z_buffer;
+	char		*current_line;
 }	t_game;
 
 #endif

@@ -90,7 +90,6 @@ static void	build_rectangular_grid(t_map_node *head, t_game *game,
 {
 	t_map_node	*curr;
 	int			i;
-	int			j;
 
 	game->map.grid = ft_calloc(count + 1, sizeof(char *));
 	if (!game->map.grid)
@@ -104,12 +103,12 @@ static void	build_rectangular_grid(t_map_node *head, t_game *game,
 	{
 		game->map.grid[i] = malloc(sizeof(char) * (max_w + 1));
 		if (!game->map.grid[i])
+		{
+			free_map_nodes(head);
 			error_exit("Allocation failed for map line", game);
-		j = -1;
-		while (curr->line[++j])
-			game->map.grid[i][j] = curr->line[j];
-		while (j < max_w)
-			game->map.grid[i][j++] = ' ';
+		}
+		ft_memset(game->map.grid[i], ' ', max_w);
+		ft_memcpy(game->map.grid[i], curr->line, ft_strlen(curr->line));
 		game->map.grid[i][max_w] = '\0';
 		curr = curr->next;
 	}
