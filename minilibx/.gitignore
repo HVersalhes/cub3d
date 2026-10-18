@@ -1,0 +1,10 @@
+*.o
+*.a
+obj/
+Makefile.gen
+test/makefile.gen
+test/*.o
+test/mlx-test
+*~
+core
+*.core

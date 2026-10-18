@@ -1,0 +1,26 @@
+# Executables
+cub3d
+cub3d_bonus
+
+# Object files & Libraries
+*.o
+*.a
+obj/
+libft/obj/
+libft/libft.a
+
+# MiniLibX build artifacts
+minilibx/obj/
+minilibx/*.o
+minilibx/*.a
+minilibx/Makefile.gen
+minilibx/test/makefile.gen
+minilibx/test/*.o
+minilibx/test/mlx-test
+
+# Temporary, archives & IDE files
+.vscode/
+*.tar.gz
+*.swp
+*~
+.DS_Store
