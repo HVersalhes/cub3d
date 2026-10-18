@@ -84,7 +84,13 @@ void	free_game(t_game *game)
 {
 	if (!game)
 		return ;
+	get_next_line(-1);
 	free_map(&game->map);
+	if (game->current_line)
+	{
+		free(game->current_line);
+		game->current_line = NULL;
+	}
 	if (game->z_buffer)
 	{
 		free(game->z_buffer);

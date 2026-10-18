@@ -37,13 +37,16 @@ static void	validate_cub_extension(const char *path, t_game *game)
 
 static void	process_header_line(char *line, int fd, t_game *game)
 {
+	game->current_line = line;
 	if (!parse_texture_line(line, game)
 		&& !parse_color_line(line, game))
 	{
+		game->current_line = NULL;
 		free(line);
 		close(fd);
 		error_exit("Invalid element or map placed before headers", game);
 	}
+	game->current_line = NULL;
 }
 
 static void	process_scene_lines(int fd, t_game *game)
