@@ -30,6 +30,8 @@
 # define DOOR_SPEED 1.5
 # define DOOR_INTERACT_DIST 1.5
 
+# define MOUSE_SENSITIVITY 0.0025
+
 # define DOOR_CLOSED 0
 # define DOOR_OPENING 1
 # define DOOR_OPEN 2
@@ -48,6 +50,7 @@ typedef struct s_bonus
 	t_img	door_tex;
 	t_door	*doors;
 	int		door_count;
+	int		mouse_x;
 	double	last_time;
 }	t_bonus;
 
@@ -61,5 +64,6 @@ int		bonus_find_door(t_bonus *b, int x, int y);
 void	bonus_update_doors(t_game *game, t_bonus *b, double dt);
 int		bonus_door_blocks(t_game *game, t_ray *ray);
 t_img	*bonus_door_texture(t_game *game, t_ray *ray);
+int		bonus_mouse_hook(int x, int y, t_game *game);
 
 #endif

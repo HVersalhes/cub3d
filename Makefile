@@ -59,7 +59,8 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/minimap_bonus.c \
              $(SRC_DIR)/bonus/doors_bonus.c \
              $(SRC_DIR)/bonus/doors_update_bonus.c \
-             $(SRC_DIR)/bonus/doors_ray_bonus.c
+             $(SRC_DIR)/bonus/doors_ray_bonus.c \
+             $(SRC_DIR)/bonus/mouse_bonus.c
 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 BONUS_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_BONUS_DIR)/%.o, $(BONUS_SRCS))

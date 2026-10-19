@@ -27,6 +27,7 @@ int	main(int argc, char **argv)
 	bonus_init(&game);
 	mlx_hook(game.win_ptr, 2, 1L << 0, key_press_handler, &game);
 	mlx_hook(game.win_ptr, 3, 1L << 1, key_release_handler, &game);
+	mlx_hook(game.win_ptr, 6, 1L << 6, bonus_mouse_hook, &game);
 	mlx_hook(game.win_ptr, 17, 0, close_game, &game);
 	mlx_loop_hook(game.mlx_ptr, game_loop, &game);
 	mlx_loop(game.mlx_ptr);
