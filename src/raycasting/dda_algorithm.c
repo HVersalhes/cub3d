@@ -11,6 +11,22 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
+
+static int	check_ray_hit(t_game *game, t_ray *ray)
+{
+	char	tile;
+
+	tile = game->map.grid[ray->map_y][ray->map_x];
+	if (tile == '1')
+		return (1);
+	if (tile == 'D' && bonus_door_blocks(game, ray))
+	{
+		ray->is_door = 1;
+		return (1);
+	}
+	return (0);
+}
 
 void	execute_dda(t_game *game, t_ray *ray)
 {
@@ -32,8 +48,7 @@ void	execute_dda(t_game *game, t_ray *ray)
 		if (ray->map_y < 0 || ray->map_y >= game->map.height
 			|| ray->map_x < 0 || ray->map_x >= game->map.width)
 			break ;
-		if (game->map.grid[ray->map_y][ray->map_x] == '1'
-			|| game->map.grid[ray->map_y][ray->map_x] == 'D')
+		if (check_ray_hit(game, ray))
 			ray->hit = 1;
 	}
 }

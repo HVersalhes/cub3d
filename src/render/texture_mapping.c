@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	get_texture_pixel(t_img *img, int x, int y)
 {
@@ -46,6 +47,9 @@ static int	calculate_tex_x(t_game *game, t_ray *ray, t_img *tex)
 		wall_x = game->player.pos_x + ray->perp_wall_dist * ray->ray_dir_x;
 	wall_x -= floor(wall_x);
 	tex_x = (int)(wall_x * (double)tex->width);
+	tex_x += ray->tex_offset;
+	if (tex_x >= tex->width)
+		tex_x = tex->width - 1;
 	if (ray->side == 0 && ray->ray_dir_x > 0)
 		tex_x = tex->width - tex_x - 1;
 	if (ray->side == 1 && ray->ray_dir_y < 0)
@@ -82,6 +86,8 @@ void	draw_textured_wall_slice(t_game *game, t_ray *ray, int x)
 {
 	t_img	*tex;
 
-	tex = &game->textures[get_wall_texture_index(ray)].img;
+	tex = bonus_door_texture(game, ray);
+	if (!tex)
+		tex = &game->textures[get_wall_texture_index(ray)].img;
 	draw_column_pixels(game, ray, tex, x);
 }
