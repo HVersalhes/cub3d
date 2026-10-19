@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	main(int argc, char **argv)
 {
@@ -23,6 +24,7 @@ int	main(int argc, char **argv)
 	init_player(&game);
 	init_mlx(&game);
 	init_textures(&game);
+	bonus_init(&game);
 	mlx_hook(game.win_ptr, 2, 1L << 0, key_press_handler, &game);
 	mlx_hook(game.win_ptr, 3, 1L << 1, key_release_handler, &game);
 	mlx_hook(game.win_ptr, 17, 0, close_game, &game);

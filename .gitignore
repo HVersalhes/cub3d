@@ -1,11 +1,13 @@
 # Executables
 cub3d
 cub3d_bonus
+cub3d_mandatory
 
 # Object files & Libraries
 *.o
 *.a
 obj/
+obj_bonus/
 libft/obj/
 libft/libft.a
 

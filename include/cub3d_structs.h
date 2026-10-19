@@ -112,6 +112,7 @@ typedef struct s_game
 	t_texture	textures[4];
 	double		*z_buffer;
 	char		*current_line;
+	void		*bonus;
 }	t_game;
 
 #endif

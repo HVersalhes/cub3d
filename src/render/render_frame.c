@@ -11,11 +11,13 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
 
 void	render_frame(t_game *game)
 {
 	render_ceiling_floor(game);
 	perform_raycasting(game);
+	bonus_render(game);
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr,
 		game->frame.img_ptr, 0, 0);
 }
@@ -23,6 +25,7 @@ void	render_frame(t_game *game)
 int	game_loop(t_game *game)
 {
 	update_player_movement(game);
+	bonus_update(game);
 	render_frame(game);
 	return (0);
 }
