@@ -31,7 +31,6 @@ void	bonus_init(t_game *game)
 	bonus_init_doors(game, b);
 	bonus_init_sprites(game, b);
 	mlx_mouse_move(game->mlx_ptr, game->win_ptr, WIN_WIDTH / 2, WIN_HEIGHT / 2);
-	b->mouse_x = -1;
 	b->last_time = get_time();
 }
 

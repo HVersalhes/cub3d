@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 01:30:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 01:55:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 02:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,28 +20,26 @@ static void	center_mouse(t_game *game)
 int	bonus_mouse_hook(int x, int y, t_game *game)
 {
 	t_bonus	*b;
-	int		delta;
+	double	target;
 
 	(void)y;
 	if (!game->bonus)
 		return (0);
 	b = (t_bonus *)game->bonus;
-	if (b->mouse_x < 0)
+	if (!b->mouse_init)
 	{
-		if (x < WIN_WIDTH / 2 - MOUSE_START_ZONE
-			|| x > WIN_WIDTH / 2 + MOUSE_START_ZONE)
-		{
-			center_mouse(game);
-			return (0);
-		}
-		b->mouse_x = x;
+		center_mouse(game);
+		b->mouse_init = 1;
 		return (0);
 	}
-	delta = x - b->mouse_x;
-	if (delta == 0)
+	target = (double)(x - WIN_WIDTH / 2) * MOUSE_SENSITIVITY;
+	if (target > MOUSE_MAX_ANGLE)
+		target = MOUSE_MAX_ANGLE;
+	else if (target < -MOUSE_MAX_ANGLE)
+		target = -MOUSE_MAX_ANGLE;
+	if (target == b->mouse_yaw)
 		return (0);
-	rotate_player(game, delta * MOUSE_SENSITIVITY);
-	center_mouse(game);
-	b->mouse_x = WIN_WIDTH / 2;
+	rotate_player(game, target - b->mouse_yaw);
+	b->mouse_yaw = target;
 	return (0);
 }
