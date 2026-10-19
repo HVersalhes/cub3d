@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
 
 void	free_tab(char **tab)
 {
@@ -96,6 +97,7 @@ void	free_game(t_game *game)
 		free(game->z_buffer);
 		game->z_buffer = NULL;
 	}
+	bonus_free(game);
 	free_mlx_resources(game);
 }
 
