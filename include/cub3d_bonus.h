@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 01:10:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 01:10:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 01:20:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,28 @@
 # define MM_COLOR_PLAYER 0xFF3030
 # define MM_COLOR_DIR 0xFFD040
 
+# define DOOR_SPEED 1.5
+# define DOOR_INTERACT_DIST 1.5
+
+# define DOOR_CLOSED 0
+# define DOOR_OPENING 1
+# define DOOR_OPEN 2
+# define DOOR_CLOSING 3
+
+typedef struct s_door
+{
+	int		x;
+	int		y;
+	int		state;
+	double	openness;
+}	t_door;
+
 typedef struct s_bonus
 {
-	int		initialized;
+	t_img	door_tex;
+	t_door	*doors;
+	int		door_count;
+	double	last_time;
 }	t_bonus;
 
 void	bonus_init(t_game *game);
@@ -37,5 +56,10 @@ void	bonus_update(t_game *game);
 void	bonus_render(t_game *game);
 void	bonus_free(t_game *game);
 void	bonus_render_minimap(t_game *game);
+void	bonus_init_doors(t_game *game, t_bonus *b);
+int		bonus_find_door(t_bonus *b, int x, int y);
+void	bonus_update_doors(t_game *game, t_bonus *b, double dt);
+int		bonus_door_blocks(t_game *game, t_ray *ray);
+t_img	*bonus_door_texture(t_game *game, t_ray *ray);
 
 #endif

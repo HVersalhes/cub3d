@@ -50,11 +50,16 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/player/movement.c \
        $(SRC_DIR)/player/rotation.c \
        $(SRC_DIR)/player/collision.c \
-       $(SRC_DIR)/bonus/stub_bonus.c
+       $(SRC_DIR)/bonus/stub_bonus.c \
+       $(SRC_DIR)/bonus/stub_ray_bonus.c
 
-BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c, $(SRCS)) \
+BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
+             $(SRC_DIR)/bonus/stub_ray_bonus.c, $(SRCS)) \
              $(SRC_DIR)/bonus/core_bonus.c \
-             $(SRC_DIR)/bonus/minimap_bonus.c
+             $(SRC_DIR)/bonus/minimap_bonus.c \
+             $(SRC_DIR)/bonus/doors_bonus.c \
+             $(SRC_DIR)/bonus/doors_update_bonus.c \
+             $(SRC_DIR)/bonus/doors_ray_bonus.c
 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 BONUS_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_BONUS_DIR)/%.o, $(BONUS_SRCS))

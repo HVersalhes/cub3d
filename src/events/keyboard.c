@@ -29,7 +29,13 @@ int	key_press_handler(int keycode, t_game *game)
 	else if (keycode == KEY_RIGHT)
 		game->keys.rot_right = true;
 	else if (keycode == KEY_E || keycode == KEY_SPACE)
-		game->keys.door_interact = true;
+	{
+		if (!game->keys.door_interact_held)
+		{
+			game->keys.door_interact = true;
+			game->keys.door_interact_held = true;
+		}
+	}
 	return (0);
 }
 
@@ -48,6 +54,6 @@ int	key_release_handler(int keycode, t_game *game)
 	else if (keycode == KEY_RIGHT)
 		game->keys.rot_right = false;
 	else if (keycode == KEY_E || keycode == KEY_SPACE)
-		game->keys.door_interact = false;
+		game->keys.door_interact_held = false;
 	return (0);
 }
