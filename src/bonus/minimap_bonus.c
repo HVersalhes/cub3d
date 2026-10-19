@@ -6,115 +6,120 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 01:10:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 01:10:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 02:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
 
-static void	draw_background(t_game *game)
+static int	mm_is_player(int x, int y)
 {
-	int	x;
-	int	y;
-	int	size;
+	double	dx;
+	double	dy;
 
-	size = MINIMAP_TILE * (2 * MINIMAP_RADIUS + 1);
-	y = 0;
-	while (y < size)
-	{
-		x = 0;
-		while (x < size)
-		{
-			my_pixel_put(&game->frame, MINIMAP_X + x, MINIMAP_Y + y,
-				MM_COLOR_BG);
-			x++;
-		}
-		y++;
-	}
+	dx = (double)(x - MINIMAP_WIDTH / 2) / MINIMAP_SCALE;
+	dy = (double)(MINIMAP_HEIGHT / 2 - y) / MINIMAP_SCALE;
+	if (dy > 0.4667 || dy < -0.3333)
+		return (0);
+	if (dx < 0.0)
+		dx = -dx;
+	if (dx > (0.4667 - dy) * 0.4162)
+		return (0);
+	return (1);
 }
 
-static void	draw_tile_at(t_game *game, int dx, int dy, int color)
-{
-	int	sx;
-	int	sy;
-	int	x;
-	int	y;
-
-	sx = MINIMAP_X + (MINIMAP_RADIUS + dx) * MINIMAP_TILE;
-	sy = MINIMAP_Y + (MINIMAP_RADIUS + dy) * MINIMAP_TILE;
-	y = 0;
-	while (y < MINIMAP_TILE - 1)
-	{
-		x = 0;
-		while (x < MINIMAP_TILE - 1)
-		{
-			my_pixel_put(&game->frame, sx + x, sy + y, color);
-			x++;
-		}
-		y++;
-	}
-}
-
-static int	tile_color(t_game *game, int mx, int my)
+static unsigned int	mm_tile_color(t_game *game, double wx, double wy)
 {
 	char	c;
+	int		mx;
+	int		my;
 
+	mx = (int)wx;
+	my = (int)wy;
 	if (mx < 0 || my < 0 || mx >= game->map.width
 		|| my >= game->map.height)
-		return (MM_COLOR_BG);
+		return (0);
 	c = game->map.grid[my][mx];
 	if (c == '1')
-		return (MM_COLOR_WALL);
+		return (MM_WALL_PACKED);
 	if (c == 'D')
-		return (MM_COLOR_DOOR);
+		return (MM_DOOR_PACKED);
 	if (c == 'T')
-		return (MM_COLOR_SPRITE);
+		return (MM_SPRITE_PACKED);
 	if (c == ' ')
-		return (MM_COLOR_BG);
-	return (MM_COLOR_FLOOR);
+		return (0);
+	return (MM_FLOOR_PACKED);
 }
 
-static void	draw_map_tiles(t_game *game)
+static void	mm_blend(t_img *img, int offset, unsigned int color,
+		double alpha)
 {
-	int	cx;
-	int	cy;
-	int	dx;
-	int	dy;
-	int	color;
+	char			*dst;
+	unsigned int	old;
+	unsigned int	r;
+	unsigned int	g;
+	unsigned int	b;
 
-	cx = (int)game->player.pos_x;
-	cy = (int)game->player.pos_y;
-	dy = -MINIMAP_RADIUS;
-	while (dy <= MINIMAP_RADIUS)
+	dst = img->data_addr + offset;
+	old = *(unsigned int *)dst;
+	r = (unsigned int)(((color >> 16) & 0xFF) * alpha);
+	r += (unsigned int)(((old >> 16) & 0xFF) * (1.0 - alpha));
+	g = (unsigned int)(((color >> 8) & 0xFF) * alpha);
+	g += (unsigned int)(((old >> 8) & 0xFF) * (1.0 - alpha));
+	b = (unsigned int)((color & 0xFF) * alpha);
+	b += (unsigned int)((old & 0xFF) * (1.0 - alpha));
+	*(unsigned int *)dst = (r << 16) | (g << 8) | b;
+}
+
+static void	mm_put_sample(t_game *game, t_mm_view *view, int x, int y)
+{
+	double			lat;
+	double			depth;
+	unsigned int	packed;
+	double			alpha;
+	int				offset;
+
+	if (mm_is_player(x, y))
 	{
-		dx = -MINIMAP_RADIUS;
-		while (dx <= MINIMAP_RADIUS)
-		{
-			color = tile_color(game, cx + dx, cy + dy);
-			if (dx == 0 && dy == 0)
-				color = MM_COLOR_PLAYER;
-			draw_tile_at(game, dx, dy, color);
-			dx++;
-		}
-		dy++;
+		my_pixel_put(&game->frame, MINIMAP_X + x, MINIMAP_Y + y,
+			MM_COLOR_PLAYER);
+		return ;
 	}
+	lat = (double)(x - MINIMAP_WIDTH / 2) / MINIMAP_SCALE;
+	depth = (double)(MINIMAP_HEIGHT / 2 - y) / MINIMAP_SCALE;
+	packed = mm_tile_color(game,
+			game->player.pos_x + view->fx * depth + view->rx * lat,
+			game->player.pos_y + view->fy * depth + view->ry * lat);
+	if (packed == 0)
+		return ;
+	alpha = (double)((packed >> 24) & 0xFF) / 255.0;
+	offset = (MINIMAP_Y + y) * game->frame.line_len;
+	offset += (MINIMAP_X + x) * (game->frame.bpp / 8);
+	mm_blend(&game->frame, offset, packed & 0xFFFFFF, alpha);
 }
 
 void	bonus_render_minimap(t_game *game)
 {
-	int	dx;
-	int	cx;
-	int	cy;
+	t_mm_view	view;
+	double		plen;
+	int			x;
+	int			y;
 
-	draw_background(game);
-	draw_map_tiles(game);
-	cx = MINIMAP_X + MINIMAP_RADIUS * MINIMAP_TILE + MINIMAP_TILE / 2;
-	cy = MINIMAP_Y + MINIMAP_RADIUS * MINIMAP_TILE + MINIMAP_TILE / 2;
-	dx = 1;
-	while (dx <= MINIMAP_TILE)
+	plen = sqrt(game->player.plane_x * game->player.plane_x
+			+ game->player.plane_y * game->player.plane_y);
+	view.fx = game->player.dir_x;
+	view.fy = game->player.dir_y;
+	view.rx = game->player.plane_x / plen;
+	view.ry = game->player.plane_y / plen;
+	y = 0;
+	while (y < MINIMAP_HEIGHT)
 	{
-		my_pixel_put(&game->frame, cx + (int)(game->player.dir_x * dx),
-			cy + (int)(game->player.dir_y * dx), MM_COLOR_DIR);
-		dx++;
+		x = 0;
+		while (x < MINIMAP_WIDTH)
+		{
+			mm_put_sample(game, &view, x, y);
+			x++;
+		}
+		y++;
 	}
 }
