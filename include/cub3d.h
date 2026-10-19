@@ -32,6 +32,7 @@
 
 # define MOVE_SPEED 0.05
 # define ROT_SPEED 0.04
+# define COLLISION_RADIUS 0.20
 
 # define KEY_W 119
 # define KEY_A 97
