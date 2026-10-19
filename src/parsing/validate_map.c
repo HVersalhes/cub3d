@@ -15,7 +15,7 @@
 static int	is_walkable_tile(char c)
 {
 	return (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W'
-		|| c == 'D');
+		|| c == 'D' || c == 'T');
 }
 
 static void	check_tile_enclosed(t_game *game, int y, int x)
@@ -70,7 +70,8 @@ static void	validate_tiles(t_game *game)
 		{
 			c = game->map.grid[y][x];
 			if (c != '0' && c != '1' && c != 'N' && c != 'S'
-				&& c != 'E' && c != 'W' && c != ' ' && c != 'D')
+				&& c != 'E' && c != 'W' && c != ' ' && c != 'D'
+				&& c != 'T')
 				error_exit("Invalid character found in map", game);
 			check_player_spawn(game, y, x, c);
 			if (is_walkable_tile(c))

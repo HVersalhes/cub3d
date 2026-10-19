@@ -67,6 +67,8 @@ static int	tile_color(t_game *game, int mx, int my)
 		return (MM_COLOR_WALL);
 	if (c == 'D')
 		return (MM_COLOR_DOOR);
+	if (c == 'T')
+		return (MM_COLOR_SPRITE);
 	if (c == ' ')
 		return (MM_COLOR_BG);
 	return (MM_COLOR_FLOOR);

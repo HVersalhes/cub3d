@@ -29,8 +29,9 @@ void	bonus_init(t_game *game)
 		error_exit("Failed to allocate bonus state", game);
 	game->bonus = b;
 	bonus_init_doors(game, b);
+	bonus_init_sprites(game, b);
 	mlx_mouse_move(game->mlx_ptr, game->win_ptr, WIN_WIDTH / 2, WIN_HEIGHT / 2);
-	b->mouse_x = WIN_WIDTH / 2;
+	b->mouse_x = -1;
 	b->last_time = get_time();
 }
 
@@ -51,10 +52,12 @@ void	bonus_update(t_game *game)
 	if (dt > 0.1)
 		dt = 0.1;
 	bonus_update_doors(game, b, dt);
+	bonus_update_sprites(b, dt);
 }
 
 void	bonus_render(t_game *game)
 {
+	bonus_render_sprites(game);
 	bonus_render_minimap(game);
 }
 
@@ -65,6 +68,7 @@ void	bonus_free(t_game *game)
 	if (!game->bonus)
 		return ;
 	b = (t_bonus *)game->bonus;
+	bonus_free_sprites(game, b);
 	if (game->mlx_ptr && b->door_tex.img_ptr)
 		mlx_destroy_image(game->mlx_ptr, b->door_tex.img_ptr);
 	if (b->doors)
