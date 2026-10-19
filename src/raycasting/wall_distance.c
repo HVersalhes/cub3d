@@ -18,7 +18,7 @@ void	perform_raycasting(t_game *game)
 	int		x;
 
 	x = 0;
-	while (x < WIN_WIDTH)
+	while (x < game->frame.width)
 	{
 		calculate_ray_vector(game, &ray, x);
 		init_ray_step(game, &ray);

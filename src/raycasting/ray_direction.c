@@ -16,7 +16,7 @@ void	calculate_ray_vector(t_game *game, t_ray *ray, int x)
 {
 	ray->is_door = 0;
 	ray->tex_offset = 0;
-	ray->camera_x = 2.0 * x / (double)WIN_WIDTH - 1.0;
+	ray->camera_x = 2.0 * x / (double)game->frame.width - 1.0;
 	ray->ray_dir_x = game->player.dir_x + game->player.plane_x * ray->camera_x;
 	ray->ray_dir_y = game->player.dir_y + game->player.plane_y * ray->camera_x;
 	ray->map_x = (int)game->player.pos_x;

@@ -47,6 +47,7 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/raycasting/wall_distance.c \
        $(SRC_DIR)/render/render_floor_ceiling.c \
        $(SRC_DIR)/render/render_frame.c \
+       $(SRC_DIR)/render/img_draw.c \
        $(SRC_DIR)/render/texture_mapping.c \
        $(SRC_DIR)/events/keyboard.c \
        $(SRC_DIR)/player/movement.c \
@@ -60,6 +61,8 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/stub2_bonus.c \
              $(SRC_DIR)/bonus/stub_ray_bonus.c, $(SRCS)) \
              $(SRC_DIR)/bonus/assets_bonus.c \
+             $(SRC_DIR)/bonus/assets_free_bonus.c \
+             $(SRC_DIR)/bonus/assets_paths_bonus.c \
              $(SRC_DIR)/bonus/combat_bonus.c \
              $(SRC_DIR)/bonus/core_bonus.c \
              $(SRC_DIR)/bonus/doors_bonus.c \
@@ -67,9 +70,10 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/doors_update_bonus.c \
              $(SRC_DIR)/bonus/draw_rect_bonus.c \
              $(SRC_DIR)/bonus/enemy_ai_bonus.c \
-             $(SRC_DIR)/bonus/enemy_bonus.c \
              $(SRC_DIR)/bonus/enemy_los_bonus.c \
              $(SRC_DIR)/bonus/enemy_render_bonus.c \
+             $(SRC_DIR)/bonus/enemy_spawn_bonus.c \
+             $(SRC_DIR)/bonus/enemy_state_bonus.c \
              $(SRC_DIR)/bonus/enemy_tick_bonus.c \
              $(SRC_DIR)/bonus/floor_ceil_bonus.c \
              $(SRC_DIR)/bonus/fullscreen_bonus.c \
@@ -79,12 +83,16 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/menu_bonus.c \
              $(SRC_DIR)/bonus/menu_load_bonus.c \
              $(SRC_DIR)/bonus/menu_render_bonus.c \
+             $(SRC_DIR)/bonus/menu_rows_bonus.c \
              $(SRC_DIR)/bonus/minimap_bonus.c \
+             $(SRC_DIR)/bonus/minimap_enemy_bonus.c \
+             $(SRC_DIR)/bonus/minimap_ring_bonus.c \
              $(SRC_DIR)/bonus/minimap_tile_bonus.c \
              $(SRC_DIR)/bonus/mouse_bonus.c \
              $(SRC_DIR)/bonus/pause_bonus.c \
              $(SRC_DIR)/bonus/pause_render_bonus.c \
              $(SRC_DIR)/bonus/render_bonus.c \
+             $(SRC_DIR)/bonus/resize_bonus.c \
              $(SRC_DIR)/bonus/shot_bonus.c \
              $(SRC_DIR)/bonus/sprites_bonus.c \
              $(SRC_DIR)/bonus/sprites_init_bonus.c \

@@ -78,6 +78,7 @@ void	draw_textured_wall_slice(t_game *game, t_ray *ray, int x);
 int		get_wall_texture_index(t_ray *ray);
 void	my_pixel_put(t_img *img, int x, int y, int color);
 int		get_texture_pixel(t_img *img, int x, int y);
+void	img_fill(t_img *img, t_rect r, int color);
 
 /* player & events */
 void	update_player_movement(t_game *game);

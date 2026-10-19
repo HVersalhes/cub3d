@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 12:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,44 +35,50 @@ unsigned int	mm_tile_color(t_game *game, double wx, double wy)
 	return (MM_FLOOR_PACKED);
 }
 
-void	mm_blend(t_img *img, int offset, unsigned int color, double alpha)
+void	mm_blend(t_img *img, int offset, unsigned int color, int alpha)
 {
 	char			*dst;
 	unsigned int	old;
-	unsigned int	r;
-	unsigned int	g;
-	unsigned int	b;
+	int				r;
+	int				g;
+	int				b;
 
 	dst = img->data_addr + offset;
 	old = *(unsigned int *)dst;
-	r = (unsigned int)(((color >> 16) & 0xFF) * alpha);
-	r += (unsigned int)(((old >> 16) & 0xFF) * (1.0 - alpha));
-	g = (unsigned int)(((color >> 8) & 0xFF) * alpha);
-	g += (unsigned int)(((old >> 8) & 0xFF) * (1.0 - alpha));
-	b = (unsigned int)((color & 0xFF) * alpha);
-	b += (unsigned int)((old & 0xFF) * (1.0 - alpha));
-	*(unsigned int *)dst = (r << 16) | (g << 8) | b;
+	r = (int)((old >> 16) & 0xFF);
+	g = (int)((old >> 8) & 0xFF);
+	b = (int)(old & 0xFF);
+	r += ((((int)((color >> 16) & 0xFF) - r) * alpha) >> 8);
+	g += ((((int)((color >> 8) & 0xFF) - g) * alpha) >> 8);
+	b += ((((int)(color & 0xFF) - b) * alpha) >> 8);
+	*(unsigned int *)dst = (unsigned int)((r << 16) | (g << 8) | b);
 }
 
-void	mm_ring(t_game *game)
+/*
+** Half width of the round border on the scanline dy lines above the
+** centre: floor(sqrt(radius^2 - dy^2)), zero when the row misses the
+** circle.
+*/
+int	ring_edge(int radius_sq, int dy)
 {
-	int	x;
-	int	y;
-	int	d2;
+	if (radius_sq - dy * dy > 0)
+		return ((int)sqrt(radius_sq - (double)dy * dy));
+	return (0);
+}
 
-	y = 0;
-	while (y < MINIMAP_HEIGHT)
-	{
-		x = 0;
-		while (x < MINIMAP_WIDTH)
-		{
-			d2 = (x - MINIMAP_WIDTH / 2) * (x - MINIMAP_WIDTH / 2)
-				+ (y - MINIMAP_HEIGHT / 2) * (y - MINIMAP_HEIGHT / 2);
-			if (d2 <= (int)MM_RADIUS2 && d2 >= (int)MM_RADIUS_IN2)
-				my_pixel_put(&game->frame, MINIMAP_X + x, MINIMAP_Y + y,
-					MM_COLOR_RING);
-			x++;
-		}
-		y++;
-	}
+/*
+** First pixel of the border on that scanline: ceil(sqrt(...)), so the
+** hole in the middle keeps exactly the pixels the old per-pixel test
+** left untouched.
+*/
+int	ring_inner(int radius_sq, int dy)
+{
+	int	i;
+
+	if (radius_sq - dy * dy <= 0)
+		return (0);
+	i = (int)sqrt(radius_sq - (double)dy * dy);
+	if (i * i < radius_sq - dy * dy)
+		i++;
+	return (i);
 }

@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 11:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,24 +54,48 @@ void	bonus_fire_weapon(t_game *game)
 	bonus_hitscan(game);
 }
 
-static void	weapon_blit(t_game *game, t_img *tex, t_rect d)
+/*
+** Scales one weapon row: the source column is stepped in 16.16 fixed
+** point and magenta texels are skipped (transparency key).
+*/
+static void	weapon_row(t_img *tex, char *src, unsigned int *dst, int w)
 {
-	int	dx;
-	int	dy;
+	int	pos;
+	int	step;
+	int	x;
 	int	color;
 
-	dy = 0;
-	while (dy < d.h)
+	step = tex->width * 65536 / w;
+	pos = 0;
+	x = 0;
+	while (x < w)
 	{
-		dx = 0;
-		while (dx < d.w)
-		{
-			color = get_texture_pixel(tex, dx * tex->width / d.w,
-					dy * tex->height / d.h);
-			if ((color & 0xFFFFFF) != SPRITE_MAGENTA)
-				my_pixel_put(&game->frame, d.x + dx, d.y + dy, color);
-			dx++;
-		}
+		color = *(unsigned int *)(src + ((pos >> 16) * 4));
+		if ((color & 0xFFFFFF) != SPRITE_MAGENTA)
+			dst[x] = color;
+		pos += step;
+		x++;
+	}
+}
+
+static void	weapon_blit(t_game *game, t_img *tex, t_rect d)
+{
+	char	*src;
+	int		dy;
+	int		end;
+
+	end = d.y + d.h;
+	if (end > game->frame.height)
+		end = game->frame.height;
+	dy = d.y;
+	if (dy < 0)
+		dy = 0;
+	while (dy < end)
+	{
+		src = tex->data_addr
+			+ (long)((dy - d.y) * tex->height / d.h) * tex->line_len;
+		weapon_row(tex, src, (unsigned int *)(game->frame.data_addr
+				+ (long)dy * game->frame.line_len) + d.x, d.w);
 		dy++;
 	}
 }
@@ -84,9 +108,9 @@ void	bonus_render_weapon(t_game *game)
 	b = (t_bonus *)game->bonus;
 	if (!b || !b->weapon_tex[b->weapon.frame].img_ptr)
 		return ;
-	d.w = WIN_WIDTH / 2;
-	d.h = WIN_HEIGHT / 2;
-	d.x = (WIN_WIDTH - d.w) / 2;
-	d.y = WIN_HEIGHT - d.h + 40;
+	d.w = game->frame.width / 2;
+	d.h = game->frame.height / 2;
+	d.x = (game->frame.width - d.w) / 2;
+	d.y = game->frame.height - d.h + game->frame.height / 20;
 	weapon_blit(game, &b->weapon_tex[b->weapon.frame], d);
 }

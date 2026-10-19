@@ -62,11 +62,11 @@ void	calculate_wall_projection(t_game *game, t_ray *ray, int x)
 	if (ray->perp_wall_dist <= 0.0001)
 		ray->perp_wall_dist = 0.0001;
 	game->z_buffer[x] = ray->perp_wall_dist;
-	ray->line_height = (int)(WIN_HEIGHT / ray->perp_wall_dist);
-	ray->draw_start = -ray->line_height / 2 + WIN_HEIGHT / 2;
+	ray->line_height = (int)(game->frame.height / ray->perp_wall_dist);
+	ray->draw_start = -ray->line_height / 2 + game->frame.height / 2;
 	if (ray->draw_start < 0)
 		ray->draw_start = 0;
-	ray->draw_end = ray->line_height / 2 + WIN_HEIGHT / 2;
-	if (ray->draw_end >= WIN_HEIGHT)
-		ray->draw_end = WIN_HEIGHT - 1;
+	ray->draw_end = ray->line_height / 2 + game->frame.height / 2;
+	if (ray->draw_end >= game->frame.height)
+		ray->draw_end = game->frame.height - 1;
 }

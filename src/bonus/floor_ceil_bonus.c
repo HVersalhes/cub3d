@@ -6,70 +6,90 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 11:30:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
 
-static void	fc_row_setup(t_game *game, t_fc_row *row, int y)
+static void	fc_tex_init(t_fc *f, t_img *tex)
 {
-	double	rx0;
-	double	ry0;
-	double	rx1;
-	double	ry1;
-
-	row->dist = (0.5 * WIN_HEIGHT) / (y - WIN_HEIGHT / 2);
-	rx0 = game->player.dir_x - game->player.plane_x;
-	ry0 = game->player.dir_y - game->player.plane_y;
-	rx1 = game->player.dir_x + game->player.plane_x;
-	ry1 = game->player.dir_y + game->player.plane_y;
-	row->step_x = row->dist * (rx1 - rx0) / WIN_WIDTH;
-	row->step_y = row->dist * (ry1 - ry0) / WIN_WIDTH;
-	row->fx = game->player.pos_x + row->dist * rx0;
-	row->fy = game->player.pos_y + row->dist * ry0;
+	f->base = tex->data_addr;
+	f->line = tex->line_len;
+	f->px = tex->bpp >> 3;
+	f->tw = tex->width;
+	f->th = tex->height;
 }
 
-static void	fc_row_draw(t_game *game, t_fc_row *row, int y, t_img *tex)
+/*
+** One scanline of the floor (or ceiling) plane.  The world position is
+** kept in 16.16 fixed point and advanced with integer adds; the texel
+** is then addressed with two integer multiplies.  No floor(), no double
+** arithmetic and no per-pixel call in the inner loop.
+*/
+static void	fc_row_setup(t_game *game, t_fc *f, int y)
 {
-	double	fx;
-	double	fy;
-	int		x;
-	int		tx;
-	int		ty;
+	double	dist;
+	double	half;
+	double	rx;
+	double	ry;
 
-	fx = row->fx;
-	fy = row->fy;
-	x = 0;
-	while (x < WIN_WIDTH)
+	half = game->frame.height / 2.0;
+	dist = half / (y - game->frame.height / 2);
+	rx = game->player.dir_x - game->player.plane_x;
+	ry = game->player.dir_y - game->player.plane_y;
+	f->u = (int)((game->player.pos_x + dist * rx) * 65536.0);
+	f->v = (int)((game->player.pos_y + dist * ry) * 65536.0);
+	f->du = (int)(dist * 2.0 * game->player.plane_x
+			* 65536.0 / game->frame.width);
+	f->dv = (int)(dist * 2.0 * game->player.plane_y
+			* 65536.0 / game->frame.width);
+}
+
+static void	fc_pixels(t_fc *f, t_game *game, int y, int w)
+{
+	unsigned int	*dst;
+	int				u;
+	int				v;
+	int				i;
+
+	dst = (unsigned int *)(game->frame.data_addr
+			+ (long)y * game->frame.line_len);
+	u = f->u;
+	v = f->v;
+	i = 0;
+	while (i < w)
 	{
-		tx = (int)(tex->width * (fx - floor(fx)));
-		ty = (int)(tex->height * (fy - floor(fy)));
-		my_pixel_put(&game->frame, x, y, get_texture_pixel(tex, tx, ty));
-		fx += row->step_x;
-		fy += row->step_y;
-		x++;
+		dst[i] = *(unsigned int *)(f->base + (((v & 0xFFFF) * f->th) >> 16)
+				* f->line + (((u & 0xFFFF) * f->tw) >> 16) * f->px);
+		u += f->du;
+		v += f->dv;
+		i++;
 	}
 }
 
 int	bonus_render_floor_ceiling(t_game *game)
 {
-	t_bonus		*b;
-	t_fc_row	row;
-	int			y;
+	t_bonus	*b;
+	t_fc	floor;
+	t_fc	ceil;
+	int		y;
 
 	b = (t_bonus *)game->bonus;
 	if (!b || !b->floor_tex.img_ptr || !b->ceil_tex.img_ptr)
 		return (0);
-	y = WIN_HEIGHT / 2 + 1;
-	while (y < WIN_HEIGHT)
+	fc_tex_init(&floor, &b->floor_tex);
+	fc_tex_init(&ceil, &b->ceil_tex);
+	y = game->frame.height / 2 + 1;
+	while (y < game->frame.height)
 	{
-		fc_row_setup(game, &row, y);
-		fc_row_draw(game, &row, y, &b->floor_tex);
-		fc_row_draw(game, &row, WIN_HEIGHT - y, &b->ceil_tex);
+		fc_row_setup(game, &floor, y);
+		fc_row_setup(game, &ceil, y);
+		fc_pixels(&floor, game, y, game->frame.width);
+		fc_pixels(&ceil, game, game->frame.height - y, game->frame.width);
 		y++;
 	}
-	fc_row_setup(game, &row, WIN_HEIGHT / 2 + 1);
-	fc_row_draw(game, &row, WIN_HEIGHT / 2, &b->ceil_tex);
+	fc_row_setup(game, &ceil, game->frame.height / 2 + 1);
+	fc_pixels(&ceil, game, game->frame.height / 2, game->frame.width);
 	return (1);
 }

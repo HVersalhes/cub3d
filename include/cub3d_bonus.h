@@ -22,18 +22,11 @@
 # define STATE_DEAD 3
 
 # define MENU_MAP_MAX 16
-# define MENU_ROW_X 250
 # define MENU_ROW_W 700
 # define MENU_ROW_H 34
-# define MENU_ROW_Y 150
-# define MENU_BTN_Y 688
 # define MENU_BTN_W 220
 # define MENU_BTN_H 54
-# define MENU_BTN1_X 320
-# define MENU_BTN2_X 660
 
-# define PAUSE_BTN_X 490
-# define PAUSE_BTN_Y 320
 # define PAUSE_BTN_W 220
 # define PAUSE_BTN_H 60
 
@@ -58,7 +51,9 @@
 # define ENEMY_DIE_TIME 0.2
 # define ENEMY_HURT_TIME 0.3
 # define ENEMY_ATTACK_DIST 1.0
-# define ENEMY_AGGRO 8.0
+# define ENEMY_SIGHT 10.0
+# define ENEMY_MEMORY 3.0
+# define ENEMY_SPAWN_MIN2 16.0
 # define ENEMY_SPIDER_DMG 6
 # define ENEMY_ZOMBIE_DMG 10
 # define ENEMY_SPIDER_HP 60
@@ -78,8 +73,6 @@
 # define MINIMAP_MARGIN 20
 # define MINIMAP_WIDTH 200
 # define MINIMAP_HEIGHT 200
-# define MINIMAP_X MINIMAP_MARGIN
-# define MINIMAP_Y 580
 # define MINIMAP_SCALE 15.0
 # define MM_RADIUS 96.0
 # define MM_RADIUS2 9216.0
@@ -98,6 +91,8 @@
 # define MM_DOOR_PACKED 0xA63EC8D8
 # define MM_SPRITE_PACKED 0xADFF9838
 # define MM_FLOOR_PACKED 0x2E1E2A38
+# define MM_ENEMY_PACKED 0xFF3E9BFF
+# define MM_ENEMY_EDGE_PACKED 0xFF0A1420
 
 # define DOOR_SPEED 1.5
 # define DOOR_INTERACT_DIST 1.5
@@ -154,14 +149,19 @@ typedef struct s_sprite_draw
 	int		end_x;
 	int		start_y;
 	int		end_y;
-	int		y_off;
+	char	*dst_end;
+	int		ty0;
+	int		ty_step;
 }	t_sprite_draw;
 
 typedef struct s_enemy
 {
 	double	x;
 	double	y;
+	double	last_x;
+	double	last_y;
 	double	dist;
+	double	memory;
 	int		type;
 	int		hp;
 	int		state;
@@ -184,27 +184,35 @@ typedef struct s_menu
 	int			selected;
 	int			row_hover;
 	int			btn_hover;
+	int			row_x;
+	int			row_w;
+	int			row_h;
+	int			row_y;
+	int			btn_x1;
+	int			btn_x2;
+	int			btn_y;
 	int			valid[MENU_MAP_MAX];
 	const char	*paths[MENU_MAP_MAX];
 	const char	*errors[MENU_MAP_MAX];
 }	t_menu;
 
-typedef struct s_rect
+/*
+** Fixed-point state for one textured floor/ceiling scanline.  Texture
+** coordinates are kept as 16.16 values so the pixel loop only adds
+** integers (no floats, no divisions, no library calls).
+*/
+typedef struct s_fc
 {
-	int	x;
-	int	y;
-	int	w;
-	int	h;
-}	t_rect;
-
-typedef struct s_fc_row
-{
-	double	dist;
-	double	fx;
-	double	fy;
-	double	step_x;
-	double	step_y;
-}	t_fc_row;
+	char	*base;
+	int		line;
+	int		px;
+	int		tw;
+	int		th;
+	int		u;
+	int		v;
+	int		du;
+	int		dv;
+}	t_fc;
 
 typedef struct s_mm_view
 {
@@ -212,6 +220,12 @@ typedef struct s_mm_view
 	double	fy;
 	double	rx;
 	double	ry;
+	double	sx;
+	double	sy;
+	double	gx;
+	double	gy;
+	double	wx0;
+	double	wy0;
 }	t_mm_view;
 
 typedef struct s_bvgrid
@@ -273,6 +287,11 @@ typedef struct s_bonus
 	int			fullscreen;
 	int			menu_mode;
 	int			pause_hover;
+	int			mm_x;
+	int			mm_y;
+	int			redraw;
+	int			fps_frames;
+	double		fps_start;
 	double		last_time;
 	t_menu		menu;
 }	t_bonus;
@@ -294,6 +313,9 @@ int				bonus_mouse_hook(int x, int y, t_game *game);
 void			bonus_load_assets(t_game *game, t_bonus *b);
 void			bonus_free_assets(t_game *game, t_bonus *b);
 void			bonus_load_image(t_game *game, t_img *img, const char *path);
+void			bonus_load_set(t_game *game, t_img *set, const char **paths,
+					int count);
+void			bonus_load_enemies(t_game *game, t_bonus *b);
 
 /* state / levels */
 t_bonus			*bonus_state_new(t_game *game);
@@ -331,6 +353,7 @@ void			bonus_damage_enemy(t_game *game, int idx, int dmg);
 void			bonus_tick_timers(t_bonus *b, double dt);
 int				enemy_solid(char c);
 int				enemy_has_los(t_game *game, t_enemy *e);
+double			enemy_dist(t_game *game, t_enemy *e);
 void			enemy_set_state(t_enemy *e, int state);
 void			enemy_walk_tick(t_enemy *e, double dt);
 void			enemy_hurt_tick(t_enemy *e, double dt);
@@ -352,21 +375,30 @@ void			draw_rect(t_img *img, t_rect r, int color);
 
 /* minimap */
 unsigned int	mm_tile_color(t_game *game, double wx, double wy);
-void			mm_blend(t_img *img, int offset, unsigned int color,
-					double alpha);
+void			mm_blend(t_img *img, int offset, unsigned int color, int alpha);
+void			mm_plot(t_game *game, int x, int y, unsigned int packed);
+void			mm_enemies(t_game *game, t_mm_view *view);
+int				ring_edge(int radius_sq, int dy);
+int				ring_inner(int radius_sq, int dy);
 void			mm_ring(t_game *game);
+void			mm_player_marker(t_game *game);
 void			bonus_render_minimap(t_game *game);
 
-/* mouse / fullscreen */
+/* mouse / fullscreen / resize */
 void			bonus_update_look(t_game *game);
 void			bonus_toggle_fullscreen(t_game *game);
+void			bonus_resize_frame(t_game *game, int w, int h);
+int				bonus_resize_hook(t_game *game);
 
 /* menu */
 void			bonus_menu_init(t_bonus *b);
-void			bonus_menu_select(t_bonus *b, int delta);
 void			bonus_menu_click(t_game *game, int x, int y);
 int				bonus_menu_row_at(t_bonus *b, int x, int y);
-int				bonus_menu_btn_at(int x, int y);
+int				bonus_menu_btn_at(t_bonus *b, int x, int y);
+int				menu_row_color(t_menu *m, int i);
+char			*menu_status(t_menu *m, int i);
+int				menu_status_color(t_menu *m, int i);
+void			menu_layout(t_bonus *b, int w, int h);
 void			bonus_render_menu(t_game *game);
 void			bonus_menu_text(t_game *game);
 const char		*bonus_validate_map(const char *path);
@@ -378,7 +410,8 @@ const char		*bonus_validate_closed(t_bvgrid *g);
 char			bonus_validate_tile(t_bvgrid *g, int x, int y);
 
 /* pause */
-int				bonus_pause_btn_at(int x, int y);
+int				bonus_pause_btn_at(t_game *game, int x, int y);
+void			bonus_pause_btn_rect(t_game *game, int idx, t_rect *r);
 void			bonus_pause_click(t_game *game, int x, int y);
 void			bonus_pause_key(t_game *game, int keycode);
 void			bonus_render_pause(t_game *game);

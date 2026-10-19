@@ -6,22 +6,37 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
 
-int	bonus_pause_btn_at(int x, int y)
+/*
+** Geometry of the pause/death overlay, derived from the framebuffer
+** size so the buttons stay centred after a fullscreen toggle.
+*/
+void	bonus_pause_btn_rect(t_game *game, int idx, t_rect *r)
 {
-	if (x < PAUSE_BTN_X || x > PAUSE_BTN_X + PAUSE_BTN_W)
-		return (-1);
-	if (y >= PAUSE_BTN_Y && y <= PAUSE_BTN_Y + PAUSE_BTN_H)
-		return (0);
-	if (y >= PAUSE_BTN_Y + 90 && y <= PAUSE_BTN_Y + 90 + PAUSE_BTN_H)
-		return (1);
-	if (y >= PAUSE_BTN_Y + 180 && y <= PAUSE_BTN_Y + 180 + PAUSE_BTN_H)
-		return (2);
+	r->w = PAUSE_BTN_W;
+	r->h = PAUSE_BTN_H;
+	r->x = (game->frame.width - r->w) / 2;
+	r->y = game->frame.height / 2 - 120 + idx * 90;
+}
+
+int	bonus_pause_btn_at(t_game *game, int x, int y)
+{
+	t_rect	r;
+	int		idx;
+
+	idx = 0;
+	while (idx < 3)
+	{
+		bonus_pause_btn_rect(game, idx, &r);
+		if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h)
+			return (idx);
+		idx++;
+	}
 	return (-1);
 }
 
@@ -33,7 +48,7 @@ void	bonus_pause_click(t_game *game, int x, int y)
 	b = (t_bonus *)game->bonus;
 	if (!b->menu_mode)
 		return ;
-	btn = bonus_pause_btn_at(x, y);
+	btn = bonus_pause_btn_at(game, x, y);
 	if (btn == 0)
 	{
 		if (b->state == STATE_DEAD)
@@ -58,6 +73,8 @@ static void	menu_pause_key(t_game *game, int keycode)
 		bonus_restart_level(game);
 	else if (keycode == KEY_Q)
 		close_game(game);
+	else if (keycode == KEY_F)
+		bonus_toggle_fullscreen(game);
 	else if (b->state == STATE_PAUSED && (keycode == KEY_P
 			|| keycode == KEY_ENTER || keycode == KEY_SPACE))
 		bonus_enter_overlay(game, STATE_PLAYING);

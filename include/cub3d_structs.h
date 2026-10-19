@@ -32,6 +32,34 @@ typedef struct s_texture
 	t_img	img;
 }	t_texture;
 
+typedef struct s_rect
+{
+	int	x;
+	int	y;
+	int	w;
+	int	h;
+}	t_rect;
+
+/*
+** Per-column state of a textured wall slice.  Kept in a struct so the
+** inner pixel loop needs a single variable and writes the framebuffer
+** through raw pointers (no per-pixel function calls).
+*/
+typedef struct s_wallcol
+{
+	char	*tex;
+	char	*row;
+	char	*end;
+	int		tline;
+	int		txoff;
+	int		hmask;
+	int		line;
+	int		step;
+	int		pos;
+	int		shade;
+	int		tex_h;
+}	t_wallcol;
+
 typedef struct s_keys
 {
 	bool	w;

@@ -23,6 +23,7 @@ t_bonus	*bonus_state_new(t_game *game)
 	game->bonus = b;
 	b->health = PLAYER_HP;
 	bonus_load_assets(game, b);
+	mlx_hook(game->win_ptr, 22, StructureNotifyMask, bonus_resize_hook, game);
 	return (b);
 }
 

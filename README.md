@@ -139,13 +139,19 @@ apenas o jogo em si:
 9. **Pausa e morte** — `P`/`Esc` congela o jogo com um painel escurecido e
    três botões (retomar/reiniciar, menu inicial, sair). A morte mostra o mesmo
    painel; no modo direto aparece apenas um aviso curto e `Esc` encerra.
-10. **Fullscreen** — `F` alterna para tela cheia via EWMH
-    (`_NET_WM_STATE_FULLSCREEN`) com redimensionamento da janela por X11. O
-    framebuffer continua `1200x800` no canto superior esquerdo, com o restante
-    da tela preto — limitação conhecida deste bônus, que preserva a resolução
-    usada nos testes.
-11. **Logs no terminal** — teclas, botões do mouse, seleção/validação de mapas
-    e eventos de combate são impressos no `stdout` para depuração.
+10. **Fullscreen com framebuffer real** — `F` alterna para tela cheia: além do
+    pedido EWMH (`_NET_WM_STATE_FULLSCREEN`) e do redimensionamento da janela
+    por X11, o **framebuffer é recriado no tamanho exato da janela** (por
+    exemplo `1920x1080`) e o jogo passa a renderizar nessa resolução — a imagem
+    ocupa a tela inteira, sem faixas pretas. Ao sair, tudo volta a `1200x800`
+    em `(40,40)`. O mesmo caminho trata o redimensionamento manual da janela
+    (hook `ConfigureNotify`), e todo o layout — colunas e botões do menu,
+    painel de pausa, HUD, arma, mira e minimapa — é recalculado a partir do
+    tamanho atual do framebuffer.
+11. **Logs no terminal** — teclas, botões do mouse, seleção/validação de mapas,
+    eventos de combate e o desempenho (`[perf] <frames> frames in <ms> ms
+    (<fps> fps)`, a cada 5 s no modo menu) são impressos no `stdout` para
+    depuração.
 
 ## Formato de mapa
 
@@ -256,15 +262,49 @@ valgrind --leak-check=full --show-leak-kinds=all ./cub3d menu
 valgrind --leak-check=full --show-leak-kinds=all ./cub3d maps/valid/arena.cub
 ```
 
+## Desempenho
+
+O projeto compila **sem nenhuma flag de otimização** (apenas `-Wall -Wextra
+-Werror`); todo o ganho vem do código:
+
+- paredes, chão/teto, sprites, arma e HUD usam aritmética de **ponto fixo
+  16.16** e escrevem direto nos ponteiros do framebuffer (sem `my_pixel_put`
+  por pixel, sem `double` no laço interno);
+- o preenchimento de áreas planas usa `img_fill` com **stores de 64 bits** (dois
+  pixels por escrita, já que o framebuffer é 32bpp);
+- o sombreamento das paredes laterais é feito com máscara e deslocamento
+  (`(c & 0xFCFCFC) - ((c & 0xFCFCFC) >> 2)`), sem multiplicações;
+- o minimapa desenha linhas inteiras de uma vez, a borda circular em *spans*
+  simétricos e o marcador do jogador em treze *spans*;
+- não existem variáveis globais de layout: o bônus calcula a posição de menus,
+  botões e HUD a partir de `game->frame.width/height`.
+
+Medições nesta máquina (Intel i7-7500U, 2 núcleos, `-O0`, modo menu):
+
+| cenário                                   | resolução | fps (≈) |
+|-------------------------------------------|-----------|---------|
+| menu de mapas                             | 1200x800  | 250     |
+| arena em jogo (janela)                    | 1200x800  | 155     |
+| arena em jogo (fullscreen)                | 1920x1080 | 56–138  |
+| arena em jogo (fullscreen, 12 inimigos no corpo a corpo) | 1920x1080 | 32–46 |
+| estado de morte (sem render do mundo)     | 1920x1080 | 300+    |
+| sob `valgrind` (menu / pausa)             | 1200x800  | 77 / 49 |
+
+Antes desta passagem de otimização, a mesma arena rodava a **19–29 fps** em
+`1200x800`. O `[perf]` impresso a cada 5 s permite repetir a medição.
+
 ## Funções externas
 
 Além das funções permitidas na parte obrigatória (`open`, `close`, `read`,
 `write`, `printf`, `malloc`, `free`, `perror`, `strerror`, `exit`,
 `gettimeofday`, funções de `<math.h>` e a MiniLibX), o bônus usa chamadas de
-X11 — `XMoveResizeWindow`, `XInternAtom`, `XSendEvent` e afins — para
-implementar o fullscreen via EWMH (`_NET_WM_STATE_FULLSCREEN`), alternativa que
-a MiniLibX não oferece. Todo o uso de X11 está isolado em
-`src/bonus/fullscreen_bonus.c` e só é alcançável pelo `F` no modo menu.
+X11 — `XMoveResizeWindow`, `XInternAtom`, `XSendEvent`, `XSetWMNormalHints`,
+`XGetWindowAttributes` e `XFlush` — para implementar o fullscreen via EWMH
+(`_NET_WM_STATE_FULLSCREEN`), alternativa que a MiniLibX não oferece, e a
+MiniLibX fornece `mlx_get_screen_size` para ler a resolução do ecrã. Esse uso de
+X11 fica isolado em `src/bonus/fullscreen_bonus.c` e em
+`src/bonus/resize_bonus.c`, e só é alcançável pelo `F` (modo menu: em jogo e na
+pausa).
 
 ## Créditos
 

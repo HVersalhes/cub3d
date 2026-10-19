@@ -62,6 +62,11 @@ static void	fill_enemy_sprite(t_game *game, t_bonus *b, t_sprite *s,
 	s->tex = enemy_texture(b, e);
 }
 
+/*
+** Only enemies still on the field become sprites: a corpse keeps its
+** alive flag while the death frames play and drops out right after
+** them, so it leaves both the world and the minimap.
+*/
 void	bonus_append_enemy_sprites(t_game *game, int *n)
 {
 	t_bonus		*b;
@@ -71,7 +76,7 @@ void	bonus_append_enemy_sprites(t_game *game, int *n)
 	i = 0;
 	while (i < b->enemy_count && *n < SPRITE_MAX)
 	{
-		if (b->enemies[i].alive || b->enemies[i].state == ENEMY_DIE)
+		if (b->enemies[i].alive)
 		{
 			fill_enemy_sprite(game, b, &b->draw_list[*n], &b->enemies[i]);
 			(*n)++;

@@ -6,52 +6,12 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
 #include "ft_printf/ft_printf.h"
-
-static const char	*g_torch_paths[TORCH_FRAMES] = {
-	"textures/bonus/torch1.xpm",
-	"textures/bonus/torch2.xpm",
-	"textures/bonus/torch3.xpm",
-	"textures/bonus/torch4.xpm",
-	"textures/bonus/torch5.xpm"
-};
-
-static const char	*g_spider_paths[ENEMY_FRAMES] = {
-	"textures/bonus/spider_walk1.xpm",
-	"textures/bonus/spider_walk2.xpm",
-	"textures/bonus/spider_walk3.xpm",
-	"textures/bonus/spider_walk4.xpm",
-	"textures/bonus/spider_attack1.xpm",
-	"textures/bonus/spider_attack2.xpm",
-	"textures/bonus/spider_hurt.xpm",
-	"textures/bonus/spider_die1.xpm",
-	"textures/bonus/spider_die2.xpm",
-	"textures/bonus/spider_die3.xpm"
-};
-
-static const char	*g_zombie_paths[ENEMY_FRAMES] = {
-	"textures/bonus/zombie_walk1.xpm",
-	"textures/bonus/zombie_walk2.xpm",
-	"textures/bonus/zombie_walk3.xpm",
-	"textures/bonus/zombie_walk4.xpm",
-	"textures/bonus/zombie_attack1.xpm",
-	"textures/bonus/zombie_attack2.xpm",
-	"textures/bonus/zombie_hurt.xpm",
-	"textures/bonus/zombie_die1.xpm",
-	"textures/bonus/zombie_die2.xpm",
-	"textures/bonus/zombie_die3.xpm"
-};
-
-static const char	*g_weapon_paths[WEAPON_FRAMES] = {
-	"textures/bonus/hands_idle.xpm",
-	"textures/bonus/hands_fire.xpm",
-	"textures/bonus/hands_recoil.xpm"
-};
 
 void	bonus_load_image(t_game *game, t_img *img, const char *path)
 {
@@ -68,7 +28,7 @@ void	bonus_load_image(t_game *game, t_img *img, const char *path)
 		error_exit("Failed to get bonus texture data", game);
 }
 
-static void	load_set(t_game *game, t_img *set, const char **paths, int count)
+void	bonus_load_set(t_game *game, t_img *set, const char **paths, int count)
 {
 	int	i;
 
@@ -80,39 +40,34 @@ static void	load_set(t_game *game, t_img *set, const char **paths, int count)
 	}
 }
 
+static void	load_torches(t_game *game, t_bonus *b)
+{
+	const char	*paths[TORCH_FRAMES];
+
+	paths[0] = "textures/bonus/torch1.xpm";
+	paths[1] = "textures/bonus/torch2.xpm";
+	paths[2] = "textures/bonus/torch3.xpm";
+	paths[3] = "textures/bonus/torch4.xpm";
+	paths[4] = "textures/bonus/torch5.xpm";
+	bonus_load_set(game, b->torch_tex, paths, TORCH_FRAMES);
+}
+
+static void	load_weapons(t_game *game, t_bonus *b)
+{
+	const char	*paths[WEAPON_FRAMES];
+
+	paths[0] = "textures/bonus/hands_idle.xpm";
+	paths[1] = "textures/bonus/hands_fire.xpm";
+	paths[2] = "textures/bonus/hands_recoil.xpm";
+	bonus_load_set(game, b->weapon_tex, paths, WEAPON_FRAMES);
+}
+
 void	bonus_load_assets(t_game *game, t_bonus *b)
 {
-	load_set(game, b->torch_tex, g_torch_paths, TORCH_FRAMES);
-	load_set(game, b->enemy_tex[0], g_spider_paths, ENEMY_FRAMES);
-	load_set(game, b->enemy_tex[1], g_zombie_paths, ENEMY_FRAMES);
-	load_set(game, b->weapon_tex, g_weapon_paths, WEAPON_FRAMES);
+	load_torches(game, b);
+	load_weapons(game, b);
+	bonus_load_enemies(game, b);
 	bonus_load_image(game, &b->door_tex, "textures/bonus/door.xpm");
 	bonus_load_image(game, &b->floor_tex, "textures/bonus/floor.xpm");
 	bonus_load_image(game, &b->ceil_tex, "textures/bonus/ceiling.xpm");
-}
-
-static void	free_set(t_game *game, t_img *set, int count)
-{
-	int	i;
-
-	i = 0;
-	while (i < count)
-	{
-		if (set[i].img_ptr && game->mlx_ptr)
-			mlx_destroy_image(game->mlx_ptr, set[i].img_ptr);
-		set[i].img_ptr = NULL;
-		set[i].data_addr = NULL;
-		i++;
-	}
-}
-
-void	bonus_free_assets(t_game *game, t_bonus *b)
-{
-	free_set(game, b->torch_tex, TORCH_FRAMES);
-	free_set(game, b->enemy_tex[0], ENEMY_FRAMES);
-	free_set(game, b->enemy_tex[1], ENEMY_FRAMES);
-	free_set(game, b->weapon_tex, WEAPON_FRAMES);
-	free_set(game, &b->door_tex, 1);
-	free_set(game, &b->floor_tex, 1);
-	free_set(game, &b->ceil_tex, 1);
 }

@@ -6,23 +6,36 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 03:00:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
 
-static int	menu_row_color(t_menu *m, int i)
+/*
+** Places every menu rectangle from the current framebuffer size, so the
+** whole screen keeps working after a fullscreen toggle or a manual
+** window resize.  Called on resize and once per rendered frame.
+*/
+void	menu_layout(t_bonus *b, int w, int h)
 {
-	if (m->valid[i])
+	t_menu	*m;
+
+	m = &b->menu;
+	m->row_w = MENU_ROW_W;
+	m->row_h = MENU_ROW_H;
+	m->row_x = (w - m->row_w) / 2;
+	if (m->row_x < 20)
 	{
-		if (m->selected == i || m->row_hover == i)
-			return (0x2E5B8A);
-		return (0x1A2836);
+		m->row_x = 20;
+		m->row_w = w - 40;
 	}
-	if (m->selected == i || m->row_hover == i)
-		return (0x8A3038);
-	return (0x33202A);
+	m->row_y = (h - m->row_h * m->count) / 2 - 40;
+	if (m->row_y < 120)
+		m->row_y = 120;
+	m->btn_y = h - MENU_BTN_H - 40;
+	m->btn_x1 = w / 2 - MENU_BTN_W - 30;
+	m->btn_x2 = w / 2 + 30;
 }
 
 static void	menu_button(t_game *game, t_menu *m, int idx)
@@ -34,8 +47,8 @@ static void	menu_button(t_game *game, t_menu *m, int idx)
 	color = cols[idx * 2];
 	if (m->btn_hover == idx)
 		color = cols[idx * 2 + 1];
-	r.x = MENU_BTN1_X + idx * (MENU_BTN2_X - MENU_BTN1_X);
-	r.y = MENU_BTN_Y;
+	r.x = m->btn_x1 + idx * (m->btn_x2 - m->btn_x1);
+	r.y = m->btn_y;
 	r.w = MENU_BTN_W;
 	r.h = MENU_BTN_H;
 	draw_rect(&game->frame, r, 0x05080A);
@@ -46,15 +59,6 @@ static void	menu_button(t_game *game, t_menu *m, int idx)
 	draw_rect(&game->frame, r, color);
 }
 
-static char	*menu_status(t_menu *m, int i)
-{
-	if (m->valid[i])
-		return ("VALID");
-	if (m->errors[i])
-		return ("INVALID - see terminal");
-	return ("INVALID");
-}
-
 void	bonus_render_menu(t_game *game)
 {
 	t_bonus	*b;
@@ -62,18 +66,19 @@ void	bonus_render_menu(t_game *game)
 	int		i;
 
 	b = (t_bonus *)game->bonus;
+	menu_layout(b, game->frame.width, game->frame.height);
 	r.x = 0;
 	r.y = 0;
-	r.w = WIN_WIDTH;
-	r.h = WIN_HEIGHT;
+	r.w = game->frame.width;
+	r.h = game->frame.height;
 	draw_rect(&game->frame, r, 0x0B0F14);
 	i = 0;
 	while (i < b->menu.count)
 	{
-		r.x = MENU_ROW_X;
-		r.y = MENU_ROW_Y + i * MENU_ROW_H;
-		r.w = MENU_ROW_W;
-		r.h = MENU_ROW_H - 6;
+		r.x = b->menu.row_x;
+		r.y = b->menu.row_y + i * b->menu.row_h;
+		r.w = b->menu.row_w;
+		r.h = b->menu.row_h - 6;
 		draw_rect(&game->frame, r, menu_row_color(&b->menu, i));
 		i++;
 	}
@@ -84,27 +89,27 @@ void	bonus_render_menu(t_game *game)
 void	bonus_menu_text(t_game *game)
 {
 	t_bonus	*b;
+	char	*status;
 	int		i;
-	int		col;
 
 	b = (t_bonus *)game->bonus;
-	mlx_string_put(game->mlx_ptr, game->win_ptr, 480, 100, 0xE8F1FF,
-		"CUB3D ARENA");
+	mlx_string_put(game->mlx_ptr, game->win_ptr, game->frame.width / 2 - 120,
+		b->menu.row_y - 40, 0xE8F1FF, "CUB3D ARENA");
 	i = 0;
 	while (i < b->menu.count)
 	{
-		mlx_string_put(game->mlx_ptr, game->win_ptr, MENU_ROW_X + 14,
-			MENU_ROW_Y + i * MENU_ROW_H + 20, 0xFFFFFF,
+		mlx_string_put(game->mlx_ptr, game->win_ptr, b->menu.row_x + 14,
+			b->menu.row_y + i * b->menu.row_h + 20, 0xFFFFFF,
 			(char *)b->menu.paths[i]);
-		col = 0xF08C8C;
-		if (b->menu.valid[i])
-			col = 0x8CF0A8;
-		mlx_string_put(game->mlx_ptr, game->win_ptr, MENU_ROW_X + 520,
-			MENU_ROW_Y + i * MENU_ROW_H + 20, col, menu_status(&b->menu, i));
+		status = menu_status(&b->menu, i);
+		mlx_string_put(game->mlx_ptr, game->win_ptr,
+			b->menu.row_x + b->menu.row_w - 180,
+			b->menu.row_y + i * b->menu.row_h + 20,
+			menu_status_color(&b->menu, i), status);
 		i++;
 	}
-	mlx_string_put(game->mlx_ptr, game->win_ptr, MENU_BTN1_X + 70,
-		MENU_BTN_Y + 34, 0xFFFFFF, "PLAY");
-	mlx_string_put(game->mlx_ptr, game->win_ptr, MENU_BTN2_X + 70,
-		MENU_BTN_Y + 34, 0xFFFFFF, "QUIT");
+	mlx_string_put(game->mlx_ptr, game->win_ptr, b->menu.btn_x1 + 70,
+		b->menu.btn_y + 34, 0xFFFFFF, "PLAY");
+	mlx_string_put(game->mlx_ptr, game->win_ptr, b->menu.btn_x2 + 70,
+		b->menu.btn_y + 34, 0xFFFFFF, "QUIT");
 }

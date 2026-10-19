@@ -24,28 +24,14 @@ void	my_pixel_put(t_img *img, int x, int y, int color)
 
 void	render_ceiling_floor(t_game *game)
 {
-	int	x;
-	int	y;
+	t_rect	r;
 
-	y = 0;
-	while (y < WIN_HEIGHT / 2)
-	{
-		x = 0;
-		while (x < WIN_WIDTH)
-		{
-			my_pixel_put(&game->frame, x, y, game->map.ceiling_color);
-			x++;
-		}
-		y++;
-	}
-	while (y < WIN_HEIGHT)
-	{
-		x = 0;
-		while (x < WIN_WIDTH)
-		{
-			my_pixel_put(&game->frame, x, y, game->map.floor_color);
-			x++;
-		}
-		y++;
-	}
+	r.x = 0;
+	r.y = 0;
+	r.w = game->frame.width;
+	r.h = game->frame.height / 2;
+	img_fill(&game->frame, r, game->map.ceiling_color);
+	r.y = r.h;
+	r.h = game->frame.height - r.h;
+	img_fill(&game->frame, r, game->map.floor_color);
 }

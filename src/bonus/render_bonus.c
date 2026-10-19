@@ -17,7 +17,11 @@ int	bonus_world_active(t_game *game)
 	t_bonus	*b;
 
 	b = (t_bonus *)game->bonus;
-	return (b && b->state == STATE_PLAYING);
+	if (!b)
+		return (0);
+	if (b->redraw || b->state == STATE_PLAYING)
+		return (1);
+	return (0);
 }
 
 void	bonus_render(t_game *game)
@@ -27,6 +31,7 @@ void	bonus_render(t_game *game)
 	b = (t_bonus *)game->bonus;
 	if (!b)
 		return ;
+	b->redraw = 0;
 	if (b->state == STATE_MENU)
 		bonus_render_menu(game);
 	else if (b->state == STATE_PAUSED || b->state == STATE_DEAD)
