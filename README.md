@@ -54,7 +54,7 @@ vê uma tocha animada na sala seguinte.
 | `W` / `S`          | mover para frente / para trás               |
 | `A` / `D`          | mover para a esquerda / direita             |
 | `←` / `→`          | rotacionar a câmera                         |
-| mouse (horizontal) | rotacionar a câmera (build bônus)           |
+| mouse (horizontal) | girar a câmera conforme a posição do cursor (bônus) |
 | `E` ou `Espaço`    | abrir/fechar porta à frente (build bônus)    |
 | `Esc`              | sair                                        |
 | fechar janela      | sair                                        |
@@ -77,8 +77,11 @@ vê uma tocha animada na sala seguinte.
 1. **Colisão com deslizamento** — raio de colisão de `0.20` unidades e
    movimento separado nos eixos X e Y, permitindo deslizar ao longo das paredes.
    O código de colisão é compartilhado e também está ativo no build obrigatório.
-2. **Minimapa** — HUD opaco de `195x195` pixels no canto superior esquerdo,
-   com tiles de `15px`, paredes, portas, chão, sprites, jogador e direção.
+2. **Minimapa** — radar translúcido de `260x180` pixels no canto inferior
+   esquerdo, centrado no jogador e sem fundo opaco. Gira junto com a câmera
+   (frente para cima), rola conforme o jogador anda e mostra apenas o alcance
+   ao redor dele: paredes, portas, chão e sprites em cores distintas, além do
+   marcador vermelho do jogador no centro.
 3. **Portas deslizantes** — tiles `D`; interação com `E`/`Espaço` a até `1.5`
    unidades. A porta desliza a `1.5` unidades por segundo, o DDA atravessa a
    parte aberta, a textura acompanha o deslocamento e a porta não fecha sobre o
@@ -86,8 +89,11 @@ vê uma tocha animada na sala seguinte.
 4. **Sprites animados** — tiles `T` com quatro texturas de tocha animadas a
    cada `0.15s`, transparência por magenta `#FF00FF`, ordenação de trás para
    frente e oclusão pelo z-buffer das paredes.
-5. **Mouse look** — rotação horizontal proporcional ao deslocamento do mouse,
-   com recentralização do cursor e proteção contra eventos de inicialização.
+5. **Mouse look** — a posição horizontal do cursor define diretamente a
+   direção da câmera: cursor no centro mantém a direção, e afastar o cursor
+   gira a visão de forma proporcional até `±90°` nas bordas da janela. O
+   primeiro evento apenas centraliza o cursor; depois disso não há
+   recentralização nem rotação contínua.
 
 ## Formato de mapa
 

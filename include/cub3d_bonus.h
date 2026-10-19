@@ -15,24 +15,29 @@
 
 # include "cub3d.h"
 
-# define MINIMAP_X 20
-# define MINIMAP_Y 20
-# define MINIMAP_TILE 15
-# define MINIMAP_RADIUS 6
+# define MINIMAP_MARGIN 20
+# define MINIMAP_WIDTH 260
+# define MINIMAP_HEIGHT 180
+# define MINIMAP_X MINIMAP_MARGIN
+# define MINIMAP_Y 600
+# define MINIMAP_SCALE 15.0
 
-# define MM_COLOR_BG 0x0A0A12
-# define MM_COLOR_WALL 0x7080A0
-# define MM_COLOR_DOOR 0xC08040
-# define MM_COLOR_FLOOR 0x202028
-# define MM_COLOR_PLAYER 0xFF3030
-# define MM_COLOR_DIR 0xFFD040
-# define MM_COLOR_SPRITE 0xFFA030
+# define MM_COLOR_WALL 0x9CB8D8
+# define MM_COLOR_DOOR 0x3EC8D8
+# define MM_COLOR_FLOOR 0x1E2A38
+# define MM_COLOR_PLAYER 0xFF3B30
+# define MM_COLOR_SPRITE 0xFF9838
+
+# define MM_WALL_PACKED 0x8C9CB8D8
+# define MM_DOOR_PACKED 0xA63EC8D8
+# define MM_SPRITE_PACKED 0xADFF9838
+# define MM_FLOOR_PACKED 0x2E1E2A38
 
 # define DOOR_SPEED 1.5
 # define DOOR_INTERACT_DIST 1.5
 
-# define MOUSE_SENSITIVITY 0.0025
-# define MOUSE_START_ZONE 50
+# define MOUSE_SENSITIVITY 0.0026
+# define MOUSE_MAX_ANGLE 1.5707963
 
 # define SPRITE_FRAMES 4
 # define SPRITE_FRAME_TIME 0.15
@@ -72,6 +77,14 @@ typedef struct s_sprite_draw
 	int		end_y;
 }	t_sprite_draw;
 
+typedef struct s_mm_view
+{
+	double	fx;
+	double	fy;
+	double	rx;
+	double	ry;
+}	t_mm_view;
+
 typedef struct s_bonus
 {
 	t_img		door_tex;
@@ -82,7 +95,8 @@ typedef struct s_bonus
 	int			sprite_count;
 	int			sprite_frame;
 	double		sprite_timer;
-	int			mouse_x;
+	int			mouse_init;
+	double		mouse_yaw;
 	double		last_time;
 }	t_bonus;
 
