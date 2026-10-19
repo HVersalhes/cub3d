@@ -4,10 +4,13 @@ Implementação do projeto **cub3D** do currículo 42: um motor de raycasting em
 com texturas XPM, movimentação em primeira pessoa, colisão, minimapa, portas
 deslizantes, sprites animados e mouse look.
 
-O projeto possui dois builds separados:
+O projeto possui dois builds que geram **um único executável `cub3d`**:
 
 - **obrigatório** (`make`): engine base do cub3D;
 - **bônus** (`make bonus`): todos os recursos extras habilitados.
+
+O último modo compilado é o que fica disponível em `./cub3d` (o modo atual é
+registrado no arquivo `.build_mode`).
 
 ## Requisitos
 
@@ -20,44 +23,73 @@ O projeto possui dois builds separados:
 ## Compilação
 
 ```sh
-make            # build obrigatório; gera cub3d_mandatory e copia para cub3d
-make bonus      # build bônus; gera cub3d_bonus e copia para cub3d
+make            # build obrigatório, gera ./cub3d
+make bonus      # build bônus, gera ./cub3d (substitui o obrigatório)
 make re         # limpa e recompila o build obrigatório
 make fclean     # remove binários e objetos
 ```
 
-Os dois binários ficam disponíveis:
+Os dois builds produzem o mesmo executável, `cub3d`, e usam diretórios de
+objetos separados (`obj/` e `obj_bonus/`):
 
 ```sh
-./cub3d_mandatory maps/valid/simple.cub
-./cub3d_bonus     maps/valid/bonus_all.cub
+make        # ./cub3d = versão obrigatória
+make bonus  # ./cub3d = versão bônus
 ```
 
-Como `cub3d` é uma cópia do último build compilado, para executar o bônus com
-certeza use `make bonus` antes de `./cub3d ...`.
+Trocar de modo recompila apenas o necessário e reescreve `cub3d` com os
+objetos do modo pedido; repetir o mesmo `make` não força relink.
 
 ## Execução
 
 ```sh
 make bonus
-./cub3d maps/valid/bonus_all.cub
+./cub3d menu                    # menu inicial (bônus completo)
+./cub3d maps/valid/arena.cub    # jogo direto, sem menu
 ```
 
-`maps/valid/bonus_all.cub` é o mapa recomendado para demonstrar todos os
-recursos bônus em conjunto: o jogador começa diante de uma porta e, ao abri-la,
-vê uma tocha animada na sala seguinte.
+### Modo menu (`./cub3d menu`)
+
+Abre um menu inicial com os 14 mapas do projeto (válidos e inválidos) e libera
+os recursos de interface do bônus:
+
+- escolha de mapa com o mouse ou `↑`/`↓` + `Enter`;
+- mapas inválidos mostram a mensagem de erro e o menu permanece aberto;
+- `F` alterna fullscreen e `P`/`Esc` pausa o jogo (com menu de pausa);
+- logs de teclado, mouse e validação de mapas no terminal.
+
+### Modo direto (`./cub3d maps/...`)
+
+O jogo começa imediatamente no mapa indicado. Nesse modo ficam disponíveis
+apenas o jogo em si:
+
+- `Esc` (ou fechar a janela) encerra o jogo;
+- `E`/`Espaço` interagem com portas;
+- clique esquerdo atira e os inimigos atacam o jogador;
+- o cursor do mouse fica livre (sem captura), permitindo fechar pelo `X`;
+- pause, fullscreen e menu **não** funcionam (não há estado de menu);
+- ao morrer, aparece um aviso curto (`YOU DIED`) e `Esc` encerra.
+
+`maps/valid/arena.cub` é o mapa recomendado para demonstrar o bônus completo:
+12 inimigos, tochas animadas e uma porta.
 
 ## Controles
 
-| Tecla / ação       | Efeito                                      |
-|--------------------|---------------------------------------------|
-| `W` / `S`          | mover para frente / para trás               |
-| `A` / `D`          | mover para a esquerda / direita             |
-| `←` / `→`          | rotacionar a câmera                         |
-| mouse (horizontal) | girar a câmera conforme a posição do cursor (bônus) |
-| `E` ou `Espaço`    | abrir/fechar porta à frente (build bônus)    |
-| `Esc`              | sair                                        |
-| fechar janela      | sair                                        |
+| Tecla / ação        | Efeito                                               |
+|---------------------|------------------------------------------------------|
+| `W` / `S`           | mover para frente / para trás                        |
+| `A` / `D`           | mover para a esquerda / direita                      |
+| `←` / `→`           | rotacionar a câmera                                  |
+| mouse (horizontal)  | girar a câmera; o cursor fica fixo no centro (bônus) |
+| clique esquerdo     | atirar (bônus)                                       |
+| `E` ou `Espaço`     | abrir/fechar porta à frente (bônus)                  |
+| `F`                 | ligar/desligar fullscreen (somente modo menu)        |
+| `P` ou `Esc`        | pausar (somente modo menu; no modo direto `Esc` sai) |
+| `R`                 | reiniciar o nível (pause/morte, modo menu)           |
+| `M` ou `Esc`        | voltar ao menu inicial (pause, modo menu)            |
+| `Q`                 | sair (pause/morte, modo menu)                        |
+| `↑` / `↓` + `Enter` | escolher mapa no menu inicial                        |
+| fechar janela       | sair                                                 |
 
 ## Funcionalidades
 
@@ -77,23 +109,43 @@ vê uma tocha animada na sala seguinte.
 1. **Colisão com deslizamento** — raio de colisão de `0.20` unidades e
    movimento separado nos eixos X e Y, permitindo deslizar ao longo das paredes.
    O código de colisão é compartilhado e também está ativo no build obrigatório.
-2. **Minimapa** — radar translúcido de `260x180` pixels no canto inferior
-   esquerdo, centrado no jogador e sem fundo opaco. Gira junto com a câmera
-   (frente para cima), rola conforme o jogador anda e mostra apenas o alcance
-   ao redor dele: paredes, portas, chão e sprites em cores distintas, além do
-   marcador vermelho do jogador no centro.
+2. **Minimapa circular** — radar translúcido de `260x260` pixels no canto
+   inferior esquerdo, desenhado em recorte circular, centrado no jogador e sem
+   fundo opaco. Gira junto com a câmera (frente para cima), rola conforme o
+   jogador anda e mostra apenas o alcance ao redor dele: paredes, portas,
+   tochas e inimigos em cores distintas, além do marcador do jogador no centro.
 3. **Portas deslizantes** — tiles `D`; interação com `E`/`Espaço` a até `1.5`
    unidades. A porta desliza a `1.5` unidades por segundo, o DDA atravessa a
    parte aberta, a textura acompanha o deslocamento e a porta não fecha sobre o
    jogador.
-4. **Sprites animados** — tiles `T` com quatro texturas de tocha animadas a
-   cada `0.15s`, transparência por magenta `#FF00FF`, ordenação de trás para
-   frente e oclusão pelo z-buffer das paredes.
-5. **Mouse look** — a posição horizontal do cursor define diretamente a
-   direção da câmera: cursor no centro mantém a direção, e afastar o cursor
-   gira a visão de forma proporcional até `±90°` nas bordas da janela. O
-   primeiro evento apenas centraliza o cursor; depois disso não há
-   recentralização nem rotação contínua.
+4. **Sprites animados** — tiles `T` com cinco texturas de tocha animadas,
+   transparência por magenta `#FF00FF`, ordenação de trás para frente e oclusão
+   pelo z-buffer das paredes.
+5. **Mouse look** — em jogo o cursor fica capturado no centro da janela: cada
+   evento de movimento vira uma rotação proporcional da câmera e o cursor é
+   recentralizado; no menu e na pausa o cursor volta a ficar livre para clicar.
+6. **Inimigos** — aranhas e zumbis em pixel art, desenhados como sprites
+   animados com os estados *walk*, *attack*, *hurt* e *die*. Nascem
+   automaticamente em tiles livres ao redor do jogador (até 12 por nível),
+   perseguem o jogador quando o veem, atacam em corpo a corpo e podem ser
+   mortos a tiro.
+7. **HUD, arma e vida** — arma desenhada como sprites de mãos com animação de
+   disparo, barra de vida que diminui quando o jogador apanha, flash vermelho
+   no dano e retículo/contadores no HUD.
+8. **Menu inicial e modo direto** — o bônus só é completo quando iniciado por
+   `./cub3d menu` (menu com a lista de mapas, validação com mensagens de erro e
+   opções de entrar/sair). Iniciar com um mapa direto entrega apenas o jogo
+   (sem pausa, menu ou fullscreen).
+9. **Pausa e morte** — `P`/`Esc` congela o jogo com um painel escurecido e
+   três botões (retomar/reiniciar, menu inicial, sair). A morte mostra o mesmo
+   painel; no modo direto aparece apenas um aviso curto e `Esc` encerra.
+10. **Fullscreen** — `F` alterna para tela cheia via EWMH
+    (`_NET_WM_STATE_FULLSCREEN`) com redimensionamento da janela por X11. O
+    framebuffer continua `1200x800` no canto superior esquerdo, com o restante
+    da tela preto — limitação conhecida deste bônus, que preserva a resolução
+    usada nos testes.
+11. **Logs no terminal** — teclas, botões do mouse, seleção/validação de mapas
+    e eventos de combate são impressos no `stdout` para depuração.
 
 ## Formato de mapa
 
@@ -129,6 +181,10 @@ Símbolos do mapa:
 O mapa deve ser fechado por paredes, conter exatamente um spawn e usar apenas
 os caracteres acima.
 
+Os inimigos do bônus não usam símbolo no mapa: eles surgem automaticamente em
+tiles andáveis ao redor do jogador (até 12), segundo uma grade determinística,
+em qualquer mapa rodado no build bônus.
+
 ## Mapas de exemplo
 
 ### Válidos
@@ -138,7 +194,8 @@ os caracteres acima.
 - `maps/valid/complex_shape.cub` — paredes em formato irregular;
 - `maps/valid/bonus_doors.cub` — duas salas separadas por porta;
 - `maps/valid/bonus_sprites.cub` — duas tochas animadas visíveis no spawn;
-- `maps/valid/bonus_all.cub` — porta + tocha + minimapa + mouse look.
+- `maps/valid/bonus_all.cub` — porta + tocha + minimapa + mouse look;
+- `maps/valid/arena.cub` — arena com 12 inimigos e uma porta.
 
 ### Inválidos
 
@@ -162,40 +219,52 @@ src/raycasting/   DDA e projeção das paredes
 src/render/       framebuffer, chão/teto e texturas
 src/player/       movimento, rotação e colisão
 src/events/       teclado e fechamento da janela
-src/bonus/        bônus e stubs usados no build obrigatório
-textures/         texturas XPM (paredes, porta e tochas)
+src/bonus/        bônus (menu, inimigos, HUD) e stubs do build obrigatório
+textures/         texturas XPM das paredes e porta
+textures/bonus/   XPM do bônus (tochas, sprites, arma e inimigos)
 maps/             mapas válidos e inválidos
 ```
 
 ### Build duplo sem `#ifdef`
 
 O build obrigatório e o bônus compartilham o código base. O build obrigatório
-linka `src/bonus/stub_bonus.c` e `src/bonus/stub_ray_bonus.c`, que fornecem
-implementações vazias para os pontos de extensão. O build bônus remove esses
-stubs e linka os arquivos reais `*_bonus.c`. Assim, não é necessário usar
-diretivas de pré-processador dentro de funções nem uma flag `-DBONUS` no
-compilador. Os dois builds usam diretórios de objetos separados (`obj/` e
-`obj_bonus/`).
+linka `src/bonus/stub_bonus.c`, `src/bonus/stub2_bonus.c` e
+`src/bonus/stub_ray_bonus.c`, que fornecem implementações vazias para os pontos
+de extensão. O build bônus remove esses stubs e linka os arquivos reais
+`*_bonus.c`. Assim, não é necessário usar diretivas de pré-processador dentro de
+funções nem uma flag `-DBONUS` no compilador. Os dois builds usam diretórios de
+objetos separados (`obj/` e `obj_bonus/`) e gravam o mesmo `cub3d`.
 
 ## Qualidade e validação
 
 - **Norminette:** `norminette src include` sem erros;
 - **Compilação:** `make re` e `make bonus` sem erros ou warnings do código do
-  projeto (o único warning é interno da MiniLibX);
-- **Valgrind:** `0 bytes in use at exit` e `All heap blocks were freed` nos
+  projeto (o único warning é interno da MiniLibX); os dois modos geram apenas
+  o executável `cub3d`;
+- **Valgrind:** `All heap blocks were freed -- no leaks are possible` nos
   fluxos testados, incluindo `Esc`, fechamento da janela, erros de textura,
-  abertura/fechamento de portas e sprites;
+  abertura/fechamento de portas, sprites, menu inicial, pausa e morte;
 - o único erro reportado pelo Valgrind é o conhecido byte não inicializado no
   `writev` interno da MiniLibX/X11 durante a criação da janela, fora do código
   do projeto.
 
-Exemplo de validação:
+Exemplos de validação:
 
 ```sh
 make bonus
-valgrind --leak-check=full --show-leak-kinds=all \
-  ./cub3d maps/valid/bonus_all.cub
+valgrind --leak-check=full --show-leak-kinds=all ./cub3d menu
+valgrind --leak-check=full --show-leak-kinds=all ./cub3d maps/valid/arena.cub
 ```
+
+## Funções externas
+
+Além das funções permitidas na parte obrigatória (`open`, `close`, `read`,
+`write`, `printf`, `malloc`, `free`, `perror`, `strerror`, `exit`,
+`gettimeofday`, funções de `<math.h>` e a MiniLibX), o bônus usa chamadas de
+X11 — `XMoveResizeWindow`, `XInternAtom`, `XSendEvent` e afins — para
+implementar o fullscreen via EWMH (`_NET_WM_STATE_FULLSCREEN`), alternativa que
+a MiniLibX não oferece. Todo o uso de X11 está isolado em
+`src/bonus/fullscreen_bonus.c` e só é alcançável pelo `F` no modo menu.
 
 ## Créditos
 

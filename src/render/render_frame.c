@@ -15,16 +15,22 @@
 
 void	render_frame(t_game *game)
 {
-	render_ceiling_floor(game);
-	perform_raycasting(game);
+	if (bonus_world_active(game))
+	{
+		if (!bonus_render_floor_ceiling(game))
+			render_ceiling_floor(game);
+		perform_raycasting(game);
+	}
 	bonus_render(game);
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr,
 		game->frame.img_ptr, 0, 0);
+	bonus_render_text(game);
 }
 
 int	game_loop(t_game *game)
 {
-	update_player_movement(game);
+	if (bonus_world_active(game))
+		update_player_movement(game);
 	bonus_update(game);
 	render_frame(game);
 	return (0);

@@ -11,9 +11,12 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "cub3d_bonus.h"
 
 int	key_press_handler(int keycode, t_game *game)
 {
+	if (bonus_key_press(keycode, game))
+		return (0);
 	if (keycode == KEY_ESC)
 		close_game(game);
 	else if (keycode == KEY_W)

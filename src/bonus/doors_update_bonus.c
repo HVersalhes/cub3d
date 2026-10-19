@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d_bonus.h"
+#include "ft_printf/ft_printf.h"
 
 static void	toggle_door(t_game *game, t_door *door)
 {
@@ -18,9 +19,13 @@ static void	toggle_door(t_game *game, t_door *door)
 	{
 		door->state = DOOR_CLOSING;
 		game->map.grid[door->y][door->x] = 'D';
+		ft_printf("[door] closing at %d,%d\n", door->x, door->y);
 	}
 	else
+	{
 		door->state = DOOR_OPENING;
+		ft_printf("[door] opening at %d,%d\n", door->x, door->y);
+	}
 }
 
 static void	advance_door(t_game *game, t_door *door, double dt)

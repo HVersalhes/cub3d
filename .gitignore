@@ -1,7 +1,6 @@
 # Executables
 cub3d
-cub3d_bonus
-cub3d_mandatory
+.build_mode
 
 # Object files & Libraries
 *.o

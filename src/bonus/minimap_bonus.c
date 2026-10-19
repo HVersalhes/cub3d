@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 01:10:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 02:30:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/10/19 03:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,47 +28,14 @@ static int	mm_is_player(int x, int y)
 	return (1);
 }
 
-static unsigned int	mm_tile_color(t_game *game, double wx, double wy)
+static int	mm_outside(int x, int y)
 {
-	char	c;
-	int		mx;
-	int		my;
+	int	dx;
+	int	dy;
 
-	mx = (int)wx;
-	my = (int)wy;
-	if (mx < 0 || my < 0 || mx >= game->map.width
-		|| my >= game->map.height)
-		return (0);
-	c = game->map.grid[my][mx];
-	if (c == '1')
-		return (MM_WALL_PACKED);
-	if (c == 'D')
-		return (MM_DOOR_PACKED);
-	if (c == 'T')
-		return (MM_SPRITE_PACKED);
-	if (c == ' ')
-		return (0);
-	return (MM_FLOOR_PACKED);
-}
-
-static void	mm_blend(t_img *img, int offset, unsigned int color,
-		double alpha)
-{
-	char			*dst;
-	unsigned int	old;
-	unsigned int	r;
-	unsigned int	g;
-	unsigned int	b;
-
-	dst = img->data_addr + offset;
-	old = *(unsigned int *)dst;
-	r = (unsigned int)(((color >> 16) & 0xFF) * alpha);
-	r += (unsigned int)(((old >> 16) & 0xFF) * (1.0 - alpha));
-	g = (unsigned int)(((color >> 8) & 0xFF) * alpha);
-	g += (unsigned int)(((old >> 8) & 0xFF) * (1.0 - alpha));
-	b = (unsigned int)((color & 0xFF) * alpha);
-	b += (unsigned int)((old & 0xFF) * (1.0 - alpha));
-	*(unsigned int *)dst = (r << 16) | (g << 8) | b;
+	dx = x - MINIMAP_WIDTH / 2;
+	dy = y - MINIMAP_HEIGHT / 2;
+	return (dx * dx + dy * dy > (int)MM_RADIUS2);
 }
 
 static void	mm_put_sample(t_game *game, t_mm_view *view, int x, int y)
@@ -76,9 +43,10 @@ static void	mm_put_sample(t_game *game, t_mm_view *view, int x, int y)
 	double			lat;
 	double			depth;
 	unsigned int	packed;
-	double			alpha;
 	int				offset;
 
+	if (mm_outside(x, y))
+		return ;
 	if (mm_is_player(x, y))
 	{
 		my_pixel_put(&game->frame, MINIMAP_X + x, MINIMAP_Y + y,
@@ -92,10 +60,10 @@ static void	mm_put_sample(t_game *game, t_mm_view *view, int x, int y)
 			game->player.pos_y + view->fy * depth + view->ry * lat);
 	if (packed == 0)
 		return ;
-	alpha = (double)((packed >> 24) & 0xFF) / 255.0;
 	offset = (MINIMAP_Y + y) * game->frame.line_len;
 	offset += (MINIMAP_X + x) * (game->frame.bpp / 8);
-	mm_blend(&game->frame, offset, packed & 0xFFFFFF, alpha);
+	mm_blend(&game->frame, offset, packed & 0xFFFFFF,
+		(double)((packed >> 24) & 0xFF) / 255.0);
 }
 
 void	bonus_render_minimap(t_game *game)
@@ -122,4 +90,5 @@ void	bonus_render_minimap(t_game *game)
 		}
 		y++;
 	}
+	mm_ring(game);
 }

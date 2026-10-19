@@ -25,3 +25,19 @@ t_img	*bonus_door_texture(t_game *game, t_ray *ray)
 	ray->tex_offset = 0;
 	return (NULL);
 }
+
+int	bonus_key_press(int keycode, t_game *game)
+{
+	(void)keycode;
+	(void)game;
+	return (0);
+}
+
+int	bonus_mouse_button(int button, int x, int y, t_game *game)
+{
+	(void)button;
+	(void)x;
+	(void)y;
+	(void)game;
+	return (0);
+}
