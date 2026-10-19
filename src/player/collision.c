@@ -32,16 +32,13 @@ static int	is_solid_cell(t_game *game, double x, double y)
 
 int	is_valid_walk_position(t_game *game, double x, double y)
 {
-	double	margin;
-
-	margin = 0.20;
-	if (is_solid_cell(game, x - margin, y - margin))
+	if (is_solid_cell(game, x - COLLISION_RADIUS, y - COLLISION_RADIUS))
 		return (0);
-	if (is_solid_cell(game, x + margin, y - margin))
+	if (is_solid_cell(game, x + COLLISION_RADIUS, y - COLLISION_RADIUS))
 		return (0);
-	if (is_solid_cell(game, x - margin, y + margin))
+	if (is_solid_cell(game, x - COLLISION_RADIUS, y + COLLISION_RADIUS))
 		return (0);
-	if (is_solid_cell(game, x + margin, y + margin))
+	if (is_solid_cell(game, x + COLLISION_RADIUS, y + COLLISION_RADIUS))
 		return (0);
 	return (1);
 }

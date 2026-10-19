@@ -41,6 +41,7 @@ typedef struct s_keys
 	bool	rot_left;
 	bool	rot_right;
 	bool	door_interact;
+	bool	door_interact_held;
 }	t_keys;
 
 typedef struct s_player
@@ -99,6 +100,8 @@ typedef struct s_ray
 	int		draw_end;
 	double	wall_x;
 	int		tex_x;
+	int		is_door;
+	int		tex_offset;
 }	t_ray;
 
 typedef struct s_game
@@ -112,6 +115,7 @@ typedef struct s_game
 	t_texture	textures[4];
 	double		*z_buffer;
 	char		*current_line;
+	void		*bonus;
 }	t_game;
 
 #endif

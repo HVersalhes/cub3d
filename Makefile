@@ -6,11 +6,13 @@
 #    By: hcosta <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/09/15 18:12:12 by hcosta            #+#    #+#              #
-#    Updated: 2026/10/19 00:30:00 by hcosta           ###   ########.fr        #
+#    Updated: 2026/10/19 01:10:00 by hcosta           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = cub3d
+MANDATORY_NAME = cub3d_mandatory
+BONUS_NAME = cub3d_bonus
 CC = cc
 
 MLX_DIR = minilibx
@@ -24,6 +26,7 @@ LDFLAGS = -L$(MLX_DIR) -lmlx -L$(LIBFT_DIR) -lft -lXext -lX11 -lm -lz
 
 SRC_DIR = src
 OBJ_DIR = obj
+OBJ_BONUS_DIR = obj_bonus
 
 SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/exit/error.c \
@@ -46,11 +49,31 @@ SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/events/keyboard.c \
        $(SRC_DIR)/player/movement.c \
        $(SRC_DIR)/player/rotation.c \
-       $(SRC_DIR)/player/collision.c
+       $(SRC_DIR)/player/collision.c \
+       $(SRC_DIR)/bonus/stub_bonus.c \
+       $(SRC_DIR)/bonus/stub_ray_bonus.c
+
+BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
+             $(SRC_DIR)/bonus/stub_ray_bonus.c, $(SRCS)) \
+             $(SRC_DIR)/bonus/core_bonus.c \
+             $(SRC_DIR)/bonus/minimap_bonus.c \
+             $(SRC_DIR)/bonus/doors_bonus.c \
+             $(SRC_DIR)/bonus/doors_update_bonus.c \
+             $(SRC_DIR)/bonus/doors_ray_bonus.c \
+             $(SRC_DIR)/bonus/mouse_bonus.c \
+             $(SRC_DIR)/bonus/sprites_bonus.c \
+             $(SRC_DIR)/bonus/sprites_sort_bonus.c \
+             $(SRC_DIR)/bonus/sprites_update_bonus.c \
+             $(SRC_DIR)/bonus/sprites_render_bonus.c
 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+BONUS_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_BONUS_DIR)/%.o, $(BONUS_SRCS))
 
-all: $(MLX_LIB) $(LIBFT_LIB) $(NAME)
+all: $(MANDATORY_NAME)
+	@cp $(MANDATORY_NAME) $(NAME)
+
+bonus: $(BONUS_NAME)
+	@cp $(BONUS_NAME) $(NAME)
 
 $(LIBFT_LIB):
 	@$(MAKE) -C $(LIBFT_DIR)
@@ -62,20 +85,25 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): $(OBJS) $(LIBFT_LIB) $(MLX_LIB)
-	$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
+$(OBJ_BONUS_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-bonus: all
+$(MANDATORY_NAME): $(OBJS) $(LIBFT_LIB) $(MLX_LIB)
+	$(CC) $(OBJS) $(LDFLAGS) -o $(MANDATORY_NAME)
+
+$(BONUS_NAME): $(BONUS_OBJS) $(LIBFT_LIB) $(MLX_LIB)
+	$(CC) $(BONUS_OBJS) $(LDFLAGS) -o $(BONUS_NAME)
 
 clean:
-	rm -rf $(OBJ_DIR)
+	rm -rf $(OBJ_DIR) $(OBJ_BONUS_DIR)
 	@$(MAKE) -C $(LIBFT_DIR) clean
 	@$(MAKE) -C $(MLX_DIR) clean
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(MANDATORY_NAME) $(BONUS_NAME)
 	@$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+.PHONY: all bonus clean fclean re
