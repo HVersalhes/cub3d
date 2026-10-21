@@ -100,18 +100,20 @@ BONUS_SRCS = $(COMMON_SRCS) \
 	src/bonus/validate_lines_bonus.c \
 	src/bonus/weapon_bonus.c
 
-OBJS = $(SRCS:.c=.o)
-BONUS_OBJS = $(BONUS_SRCS:.c=.o)
+OBJS_DIR = obj
+OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT) $(MLX)
 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
 
-bonus: $(BONUS_OBJS) $(LIBFT) $(MLX)
-	$(CC) $(CFLAGS) $(BONUS_OBJS) $(LDFLAGS) -o $(NAME)
+bonus:
+	@$(MAKE) SRCS="$(BONUS_SRCS)"
 
-$(OBJS) $(BONUS_OBJS): $(INCS)
+$(OBJS_DIR)/%.o: %.c $(INCS)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
 	@$(MAKE) -C libft
@@ -120,7 +122,7 @@ $(MLX):
 	@$(MAKE) -C minilibx > /dev/null 2>&1
 
 clean:
-	$(RM) $(OBJS) $(BONUS_OBJS)
+	$(RM) $(OBJS_DIR)
 	@$(MAKE) -C libft clean
 	@$(MAKE) -C minilibx clean
 
