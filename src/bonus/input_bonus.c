@@ -24,11 +24,6 @@ static int	playing_key(int keycode, t_game *game)
 		bonus_enter_overlay(game, STATE_PAUSED);
 		return (1);
 	}
-	if (keycode == KEY_F)
-	{
-		bonus_toggle_fullscreen(game);
-		return (1);
-	}
 	return (0);
 }
 
@@ -50,8 +45,6 @@ static void	menu_key(t_game *game, int keycode)
 	}
 	else if (keycode == KEY_ENTER)
 		bonus_load_selected(game);
-	else if (keycode == KEY_F)
-		bonus_toggle_fullscreen(game);
 	else if (keycode == KEY_ESC)
 		close_game(game);
 }
@@ -63,13 +56,12 @@ int	bonus_key_press(int keycode, t_game *game)
 	b = (t_bonus *)game->bonus;
 	if (!b)
 		return (0);
-	bonus_log_key(keycode);
 	if (b->state == STATE_MENU)
 	{
 		menu_key(game, keycode);
 		return (1);
 	}
-	if (b->state == STATE_PAUSED || b->state == STATE_DEAD)
+	if (b->state == STATE_PAUSED)
 	{
 		bonus_pause_key(game, keycode);
 		return (1);
@@ -91,8 +83,7 @@ int	bonus_mouse_hook(int x, int y, t_game *game)
 		b->menu.row_hover = bonus_menu_row_at(b, x, y);
 		b->menu.btn_hover = bonus_menu_btn_at(b, x, y);
 	}
-	else if ((b->state == STATE_PAUSED || b->state == STATE_DEAD)
-		&& b->menu_mode)
+	else if (b->state == STATE_PAUSED && b->menu_mode)
 		b->pause_hover = bonus_pause_btn_at(game, x, y);
 	return (0);
 }
@@ -104,7 +95,6 @@ int	bonus_mouse_button(int button, int x, int y, t_game *game)
 	b = (t_bonus *)game->bonus;
 	if (!b)
 		return (0);
-	bonus_log_mouse(button, x, y);
 	if (b->state == STATE_PLAYING)
 	{
 		if (button == MOUSE_LEFT)

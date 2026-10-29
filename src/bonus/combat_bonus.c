@@ -41,7 +41,8 @@ void	bonus_damage_player(t_game *game, int dmg)
 	if (b->health <= 0)
 	{
 		b->health = 0;
-		bonus_enter_overlay(game, STATE_DEAD);
+		ft_printf("Game Over! You died.\n");
+		close_game(game);
 	}
 }
 

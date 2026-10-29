@@ -23,7 +23,7 @@ t_bonus	*bonus_state_new(t_game *game)
 	game->bonus = b;
 	b->health = PLAYER_HP;
 	bonus_load_assets(game, b);
-	mlx_hook(game->win_ptr, 22, StructureNotifyMask, bonus_resize_hook, game);
+	menu_layout(b, WIN_WIDTH, WIN_HEIGHT);
 	return (b);
 }
 
@@ -49,14 +49,6 @@ static void	overlay_playing(t_game *game)
 
 	b = (t_bonus *)game->bonus;
 	b->mouse_init = 0;
-	if (!b->menu_mode)
-	{
-		mlx_mouse_show(game->mlx_ptr, game->win_ptr);
-		ft_printf("[cub3d] in game (classic controls)\n");
-		return ;
-	}
-	mlx_mouse_hide(game->mlx_ptr, game->win_ptr);
-	ft_printf("[cub3d] in game (mouse fixed at center)\n");
 }
 
 void	bonus_enter_overlay(t_game *game, int state)
@@ -75,11 +67,6 @@ void	bonus_enter_overlay(t_game *game, int state)
 	{
 		bonus_tint_frame(game, 0.45, 0x000000);
 		ft_printf("[cub3d] paused\n");
-	}
-	else if (state == STATE_DEAD)
-	{
-		bonus_tint_frame(game, 0.45, 0x800000);
-		ft_printf("[cub3d] player died\n");
 	}
 	else
 		ft_printf("[cub3d] menu\n");

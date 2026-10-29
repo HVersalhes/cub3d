@@ -14,7 +14,6 @@
 # define CUB3D_BONUS_H
 
 # include "cub3d.h"
-# include <X11/Xlib.h>
 
 # define STATE_MENU 0
 # define STATE_PLAYING 1
@@ -236,28 +235,6 @@ typedef struct s_bvgrid
 	int		height;
 }	t_bvgrid;
 
-typedef struct s_keylabel
-{
-	int			code;
-	const char	*label;
-}	t_keylabel;
-
-/*
-** MiniLibX keeps its X11 handles at the very beginning of its private
-** structures: t_xvar starts with the Display pointer and t_win_list with
-** the Window id.  Mirroring those two first fields avoids including
-** mlx_int.h, which would clash with the t_img type of this project.
-*/
-typedef struct s_mlx_ctx
-{
-	Display	*display;
-}	t_mlx_ctx;
-
-typedef struct s_mlx_win
-{
-	Window	window;
-}	t_mlx_win;
-
 typedef struct s_bonus
 {
 	int			state;
@@ -284,19 +261,17 @@ typedef struct s_bonus
 	int			mouse_init;
 	int			mouse_x;
 	int			mouse_y;
-	int			fullscreen;
 	int			menu_mode;
 	int			pause_hover;
 	int			mm_x;
 	int			mm_y;
 	int			redraw;
-	int			fps_frames;
-	double		fps_start;
 	double		last_time;
 	t_menu		menu;
 }	t_bonus;
 
 /* shared entry points (stubbed in the mandatory build) */
+int				bonus_active(void);
 void			bonus_init(t_game *game);
 void			bonus_update(t_game *game);
 void			bonus_render(t_game *game);
@@ -384,11 +359,8 @@ void			mm_ring(t_game *game);
 void			mm_player_marker(t_game *game);
 void			bonus_render_minimap(t_game *game);
 
-/* mouse / fullscreen / resize */
+/* mouse look */
 void			bonus_update_look(t_game *game);
-void			bonus_toggle_fullscreen(t_game *game);
-void			bonus_resize_frame(t_game *game, int w, int h);
-int				bonus_resize_hook(t_game *game);
 
 /* menu */
 void			bonus_menu_init(t_bonus *b);
@@ -416,11 +388,5 @@ void			bonus_pause_click(t_game *game, int x, int y);
 void			bonus_pause_key(t_game *game, int keycode);
 void			bonus_render_pause(t_game *game);
 void			bonus_pause_text(t_game *game);
-
-/* logging */
-void			bonus_log_key(int keycode);
-void			bonus_log_mouse(int button, int x, int y);
-void			bonus_log_map_ok(const char *path);
-void			bonus_log_map_err(const char *path, const char *err);
 
 #endif

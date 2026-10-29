@@ -90,11 +90,6 @@ void	bonus_pause_text(t_game *game)
 	b = (t_bonus *)game->bonus;
 	title = "PAUSE";
 	first = "RESUME (P)";
-	if (b->state == STATE_DEAD)
-	{
-		title = "YOU DIED";
-		first = "RESTART (R)";
-	}
 	if (!b->menu_mode)
 		pause_text_direct(game, title);
 	else

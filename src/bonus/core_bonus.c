@@ -13,6 +13,11 @@
 #include "cub3d_bonus.h"
 #include "ft_printf/ft_printf.h"
 
+int	bonus_active(void)
+{
+	return (1);
+}
+
 static double	update_dt(t_bonus *b)
 {
 	struct timeval	tv;
@@ -28,28 +33,6 @@ static double	update_dt(t_bonus *b)
 	if (dt > 0.1)
 		dt = 0.1;
 	return (dt);
-}
-
-static void	fps_tick(t_bonus *b)
-{
-	struct timeval	tv;
-	double			elapsed;
-
-	if (!b->menu_mode)
-		return ;
-	b->fps_frames++;
-	gettimeofday(&tv, NULL);
-	if (b->fps_start == 0.0)
-		b->fps_start = (double)tv.tv_sec
-			+ (double)tv.tv_usec / 1000000.0;
-	elapsed = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0
-		- b->fps_start;
-	if (elapsed < 5.0)
-		return ;
-	ft_printf("[perf] %d frames in %d ms (%d fps)\n", b->fps_frames,
-		(int)(elapsed * 1000.0), (int)(b->fps_frames / elapsed));
-	b->fps_frames = 0;
-	b->fps_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
 }
 
 void	bonus_init(t_game *game)
@@ -71,13 +54,11 @@ void	bonus_update(t_game *game)
 	b = (t_bonus *)game->bonus;
 	if (!b)
 		return ;
-	fps_tick(b);
 	dt = update_dt(b);
 	if (b->state != STATE_PLAYING)
 		return ;
 	bonus_tick_timers(b, dt);
-	if (b->menu_mode)
-		bonus_update_look(game);
+	bonus_update_look(game);
 	bonus_update_doors(game, b, dt);
 	bonus_update_sprites(b, dt);
 	bonus_update_enemies(game, dt);

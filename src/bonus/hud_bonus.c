@@ -109,5 +109,5 @@ void	bonus_hud_text(t_game *game)
 		"WASD move | mouse look | LMB shoot | E door");
 	mlx_string_put(game->mlx_ptr, game->win_ptr, 20,
 		game->frame.height - 8, 0xC8DCEF,
-		"F fullscreen | P pause");
+		"P pause | ESC exit");
 }

@@ -50,12 +50,7 @@ void	bonus_pause_click(t_game *game, int x, int y)
 		return ;
 	btn = bonus_pause_btn_at(game, x, y);
 	if (btn == 0)
-	{
-		if (b->state == STATE_DEAD)
-			bonus_restart_level(game);
-		else
-			bonus_enter_overlay(game, STATE_PLAYING);
-	}
+		bonus_enter_overlay(game, STATE_PLAYING);
 	else if (btn == 1)
 		bonus_back_to_menu(game);
 	else if (btn == 2)
@@ -73,8 +68,6 @@ static void	menu_pause_key(t_game *game, int keycode)
 		bonus_restart_level(game);
 	else if (keycode == KEY_Q)
 		close_game(game);
-	else if (keycode == KEY_F)
-		bonus_toggle_fullscreen(game);
 	else if (b->state == STATE_PAUSED && (keycode == KEY_P
 			|| keycode == KEY_ENTER || keycode == KEY_SPACE))
 		bonus_enter_overlay(game, STATE_PLAYING);

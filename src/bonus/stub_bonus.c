@@ -12,6 +12,11 @@
 
 #include "cub3d_bonus.h"
 
+int	bonus_active(void)
+{
+	return (0);
+}
+
 void	bonus_init(t_game *game)
 {
 	(void)game;
@@ -30,12 +35,4 @@ void	bonus_render(t_game *game)
 void	bonus_free(t_game *game)
 {
 	(void)game;
-}
-
-int	bonus_mouse_hook(int x, int y, t_game *game)
-{
-	(void)x;
-	(void)y;
-	(void)game;
-	return (0);
 }

@@ -60,10 +60,9 @@ int	bonus_load_selected(t_game *game)
 	path = b->menu.paths[b->menu.selected];
 	if (!b->menu.valid[b->menu.selected])
 	{
-		bonus_log_map_err(path, b->menu.errors[b->menu.selected]);
+		ft_printf("Error: %s: %s\n", path, b->menu.errors[b->menu.selected]);
 		return (0);
 	}
-	bonus_log_map_ok(path);
 	bonus_unload_level(game);
 	ft_printf("[cub3d] loading map: %s\n", path);
 	parse_cub_file(path, game);

@@ -34,7 +34,7 @@ void	bonus_render(t_game *game)
 	b->redraw = 0;
 	if (b->state == STATE_MENU)
 		bonus_render_menu(game);
-	else if (b->state == STATE_PAUSED || b->state == STATE_DEAD)
+	else if (b->state == STATE_PAUSED)
 		bonus_render_pause(game);
 	else
 	{
@@ -54,7 +54,7 @@ void	bonus_render_text(t_game *game)
 		return ;
 	if (b->state == STATE_MENU)
 		bonus_menu_text(game);
-	else if (b->state == STATE_PAUSED || b->state == STATE_DEAD)
+	else if (b->state == STATE_PAUSED)
 		bonus_pause_text(game);
 	else
 		bonus_hud_text(game);

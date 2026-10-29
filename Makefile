@@ -76,10 +76,8 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/enemy_state_bonus.c \
              $(SRC_DIR)/bonus/enemy_tick_bonus.c \
              $(SRC_DIR)/bonus/floor_ceil_bonus.c \
-             $(SRC_DIR)/bonus/fullscreen_bonus.c \
              $(SRC_DIR)/bonus/hud_bonus.c \
              $(SRC_DIR)/bonus/input_bonus.c \
-             $(SRC_DIR)/bonus/log_bonus.c \
              $(SRC_DIR)/bonus/menu_bonus.c \
              $(SRC_DIR)/bonus/menu_load_bonus.c \
              $(SRC_DIR)/bonus/menu_render_bonus.c \
@@ -92,7 +90,6 @@ BONUS_SRCS = $(filter-out $(SRC_DIR)/bonus/stub_bonus.c \
              $(SRC_DIR)/bonus/pause_bonus.c \
              $(SRC_DIR)/bonus/pause_render_bonus.c \
              $(SRC_DIR)/bonus/render_bonus.c \
-             $(SRC_DIR)/bonus/resize_bonus.c \
              $(SRC_DIR)/bonus/shot_bonus.c \
              $(SRC_DIR)/bonus/sprites_bonus.c \
              $(SRC_DIR)/bonus/sprites_init_bonus.c \
