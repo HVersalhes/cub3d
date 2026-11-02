@@ -6,13 +6,16 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:30:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 11:30:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include "cub3d_bonus.h"
 
+/*
+** Chooses the texture that faces the player. A vertical wall hit while
+** moving east shows its west face, and so on.
+*/
 int	get_wall_texture_index(t_ray *ray)
 {
 	if (ray->side == 0)
@@ -26,7 +29,11 @@ int	get_wall_texture_index(t_ray *ray)
 	return (1);
 }
 
-static int	calculate_tex_x(t_game *game, t_ray *ray, t_img *tex)
+/*
+** Finds where the ray hit the wall (0.0 = left edge, 1.0 = right edge)
+** and converts that position into an X coordinate in the texture.
+*/
+static int	calculate_texture_x(t_game *game, t_ray *ray, t_img *texture)
 {
 	double	wall_x;
 	int		tex_x;
@@ -36,79 +43,65 @@ static int	calculate_tex_x(t_game *game, t_ray *ray, t_img *tex)
 	else
 		wall_x = game->player.pos_x + ray->perp_wall_dist * ray->ray_dir_x;
 	wall_x -= floor(wall_x);
-	tex_x = (int)(wall_x * (double)tex->width);
-	tex_x += ray->tex_offset;
-	if (tex_x >= tex->width)
-		tex_x = tex->width - 1;
+	tex_x = (int)(wall_x * (double)texture->width);
 	if (ray->side == 0 && ray->ray_dir_x > 0)
-		tex_x = tex->width - tex_x - 1;
+		tex_x = texture->width - tex_x - 1;
 	if (ray->side == 1 && ray->ray_dir_y < 0)
-		tex_x = tex->width - tex_x - 1;
+		tex_x = texture->width - tex_x - 1;
 	return (tex_x);
 }
 
 /*
-** Walks one clipped wall column.  The texture row is stepped in 16.16
-** fixed point and every texel is written straight to the framebuffer
-** memory: no per-pixel function call, no floating point, no bounds
-** test (the column was already clipped by calculate_wall_projection).
-** side == 1 columns are shaded to 3/4 with a mask/sub pair that keeps
-** the three channels independent.
+** Darkens the side walls a little so corners are easier to see. Each
+** color channel is multiplied by 3/4.
 */
-static void	wall_col_run(t_wallcol *c)
+static int	shade_color(int color)
 {
-	unsigned int	color;
-	char			*col;
-	int				tline;
-	int				ty;
+	int	red;
+	int	green;
+	int	blue;
 
-	col = c->tex + c->txoff;
-	tline = c->tline;
-	while (c->row < c->end)
-	{
-		ty = c->pos >> 16;
-		if (c->hmask < 0)
-			ty %= c->tex_h;
-		else
-			ty &= c->hmask;
-		color = *(unsigned int *)(col + ty * tline);
-		if (c->shade)
-			color = (color & 0xFCFCFC) - ((color & 0xFCFCFC) >> 2);
-		*(unsigned int *)c->row = color;
-		c->row += c->line;
-		c->pos += c->step;
-	}
+	red = ((color >> 16) & 0xFF) * 3 / 4;
+	green = ((color >> 8) & 0xFF) * 3 / 4;
+	blue = (color & 0xFF) * 3 / 4;
+	return ((red << 16) | (green << 8) | blue);
 }
 
-static void	draw_column_pixels(t_game *game, t_ray *ray, t_img *tex, int x)
+/*
+** Draws one vertical slice. tex_pos is a floating-point position inside
+** the texture; it advances by "step" for every screen pixel.
+*/
+static void	draw_column_pixels(t_game *game, t_ray *ray,
+	t_img *texture, int x)
 {
-	t_wallcol	c;
+	double	step;
+	double	tex_pos;
+	int		tex_x;
+	int		y;
+	int		color;
 
-	c.tex = tex->data_addr;
-	c.tline = tex->line_len;
-	c.txoff = calculate_tex_x(game, ray, tex) * (tex->bpp >> 3);
-	c.hmask = tex->height - 1;
-	if ((tex->height & (tex->height - 1)) != 0)
-		c.hmask = -1;
-	c.tex_h = tex->height;
-	c.line = game->frame.line_len;
-	c.step = (tex->height << 16) / ray->line_height;
-	c.pos = (ray->draw_start - game->frame.height / 2
-			+ ray->line_height / 2) * c.step;
-	c.row = game->frame.data_addr
-		+ (long)ray->draw_start * game->frame.line_len
-		+ (long)x * (game->frame.bpp >> 3);
-	c.end = c.row + (long)(ray->draw_end - ray->draw_start + 1) * c.line;
-	c.shade = (ray->side == 1);
-	wall_col_run(&c);
+	tex_x = calculate_texture_x(game, ray, texture);
+	step = (double)texture->height / ray->line_height;
+	tex_pos = (ray->draw_start - game->frame.height / 2
+			+ ray->line_height / 2) * step;
+	y = ray->draw_start;
+	while (y <= ray->draw_end)
+	{
+		color = *(unsigned int *)(texture->data_addr
+				+ ((int)tex_pos % texture->height) * texture->line_len
+				+ tex_x * (texture->bpp / 8));
+		if (ray->side == 1)
+			color = shade_color(color);
+		my_pixel_put(&game->frame, x, y, color);
+		tex_pos += step;
+		y++;
+	}
 }
 
 void	draw_textured_wall_slice(t_game *game, t_ray *ray, int x)
 {
-	t_img	*tex;
+	t_img	*texture;
 
-	tex = bonus_door_texture(game, ray);
-	if (!tex)
-		tex = &game->textures[get_wall_texture_index(ray)].img;
-	draw_column_pixels(game, ray, tex, x);
+	texture = &game->textures[get_wall_texture_index(ray)];
+	draw_column_pixels(game, ray, texture, x);
 }

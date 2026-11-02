@@ -6,14 +6,13 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:06:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:06:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include "cub3d_bonus.h"
 
-void	free_tab(char **tab)
+static void	free_tab(char **tab)
 {
 	int	i;
 
@@ -23,16 +22,13 @@ void	free_tab(char **tab)
 	while (tab[i])
 	{
 		free(tab[i]);
-		tab[i] = NULL;
 		i++;
 	}
 	free(tab);
 }
 
-void	free_map(t_map *map)
+static void	free_map(t_map *map)
 {
-	if (!map)
-		return ;
 	if (map->no_path)
 		free(map->no_path);
 	if (map->so_path)
@@ -52,6 +48,10 @@ void	free_map(t_map *map)
 	}
 }
 
+/*
+** Destroys the images, the window, the display connection and finally
+** the MiniLibX context itself.
+*/
 static void	free_mlx_resources(t_game *game)
 {
 	int	i;
@@ -59,12 +59,9 @@ static void	free_mlx_resources(t_game *game)
 	i = 0;
 	while (i < 4)
 	{
-		if (game->textures[i].path)
-			free(game->textures[i].path);
-		game->textures[i].path = NULL;
-		if (game->mlx_ptr && game->textures[i].img.img_ptr)
-			mlx_destroy_image(game->mlx_ptr, game->textures[i].img.img_ptr);
-		game->textures[i].img.img_ptr = NULL;
+		if (game->mlx_ptr && game->textures[i].img_ptr)
+			mlx_destroy_image(game->mlx_ptr, game->textures[i].img_ptr);
+		game->textures[i].img_ptr = NULL;
 		i++;
 	}
 	if (game->mlx_ptr && game->frame.img_ptr)
@@ -81,6 +78,11 @@ static void	free_mlx_resources(t_game *game)
 	}
 }
 
+/*
+** Releases every allocation owned by the game. It is safe to call this
+** function more than once because all pointers are set to NULL after
+** they are freed.
+*/
 void	free_game(t_game *game)
 {
 	if (!game)
@@ -92,12 +94,6 @@ void	free_game(t_game *game)
 		free(game->current_line);
 		game->current_line = NULL;
 	}
-	if (game->z_buffer)
-	{
-		free(game->z_buffer);
-		game->z_buffer = NULL;
-	}
-	bonus_free(game);
 	free_mlx_resources(game);
 }
 

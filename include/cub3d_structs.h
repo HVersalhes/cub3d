@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 13:22:46 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:12:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 
 # include <stdbool.h>
 
+/*
+** MiniLibX image: the pixel buffer and the information needed to
+** address a pixel with the formula y * line_len + x * (bpp / 8).
+*/
 typedef struct s_img
 {
 	void	*img_ptr;
@@ -26,40 +30,10 @@ typedef struct s_img
 	int		height;
 }	t_img;
 
-typedef struct s_texture
-{
-	char	*path;
-	t_img	img;
-}	t_texture;
-
-typedef struct s_rect
-{
-	int	x;
-	int	y;
-	int	w;
-	int	h;
-}	t_rect;
-
 /*
-** Per-column state of a textured wall slice.  Kept in a struct so the
-** inner pixel loop needs a single variable and writes the framebuffer
-** through raw pointers (no per-pixel function calls).
+** Current keyboard state. Movement is applied while a key is held,
+** so key presses only change these flags.
 */
-typedef struct s_wallcol
-{
-	char	*tex;
-	char	*row;
-	char	*end;
-	int		tline;
-	int		txoff;
-	int		hmask;
-	int		line;
-	int		step;
-	int		pos;
-	int		shade;
-	int		tex_h;
-}	t_wallcol;
-
 typedef struct s_keys
 {
 	bool	w;
@@ -68,10 +42,13 @@ typedef struct s_keys
 	bool	d;
 	bool	rot_left;
 	bool	rot_right;
-	bool	door_interact;
-	bool	door_interact_held;
 }	t_keys;
 
+/*
+** Player position and camera vectors. dir_* points where the player
+** looks and plane_* is perpendicular to it; together they define the
+** field of view used by the raycasting code.
+*/
 typedef struct s_player
 {
 	double	pos_x;
@@ -84,6 +61,10 @@ typedef struct s_player
 	double	rot_speed;
 }	t_player;
 
+/*
+** Everything read from the .cub file. The grid is rectangular: shorter
+** map lines are padded with spaces during parsing.
+*/
 typedef struct s_map
 {
 	char	**grid;
@@ -101,12 +82,20 @@ typedef struct s_map
 	int		player_spawn_y;
 }	t_map;
 
+/*
+** Temporary linked list used while reading map lines. The grid is only
+** allocated after the width and height are known.
+*/
 typedef struct s_map_node
 {
 	char				*line;
 	struct s_map_node	*next;
 }	t_map_node;
 
+/*
+** State of one cast ray. DDA fills map_x/map_y and the side values until
+** a wall is found; the projection values are then used to draw one column.
+*/
 typedef struct s_ray
 {
 	double	camera_x;
@@ -126,12 +115,12 @@ typedef struct s_ray
 	int		line_height;
 	int		draw_start;
 	int		draw_end;
-	double	wall_x;
-	int		tex_x;
-	int		is_door;
-	int		tex_offset;
 }	t_ray;
 
+/*
+** Main game object. It owns the map, the player, the window, the
+** framebuffer and the four wall textures (NO, SO, WE, EA).
+*/
 typedef struct s_game
 {
 	void		*mlx_ptr;
@@ -140,10 +129,8 @@ typedef struct s_game
 	t_map		map;
 	t_player	player;
 	t_keys		keys;
-	t_texture	textures[4];
-	double		*z_buffer;
+	t_img		textures[4];
 	char		*current_line;
-	void		*bonus;
 }	t_game;
 
 #endif

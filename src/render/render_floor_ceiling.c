@@ -6,32 +6,51 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:16:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:16:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/*
+** Writes one pixel in the framebuffer. The address of a pixel is:
+** data_addr + y * line_len + x * (bits_per_pixel / 8).
+*/
 void	my_pixel_put(t_img *img, int x, int y, int color)
 {
-	char	*dst;
+	char	*destination;
 
 	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
 		return ;
-	dst = img->data_addr + (y * img->line_len + x * (img->bpp / 8));
-	*(unsigned int *)dst = color;
+	destination = img->data_addr + y * img->line_len
+		+ x * (img->bpp / 8);
+	*(unsigned int *)destination = (unsigned int)color;
 }
 
+/*
+** The top half of the screen is the ceiling and the bottom half is the
+** floor. Walls are drawn later on top of these colors.
+*/
 void	render_ceiling_floor(t_game *game)
 {
-	t_rect	r;
+	int	x;
+	int	y;
+	int	half_height;
 
-	r.x = 0;
-	r.y = 0;
-	r.w = game->frame.width;
-	r.h = game->frame.height / 2;
-	img_fill(&game->frame, r, game->map.ceiling_color);
-	r.y = r.h;
-	r.h = game->frame.height - r.h;
-	img_fill(&game->frame, r, game->map.floor_color);
+	half_height = game->frame.height / 2;
+	y = 0;
+	while (y < game->frame.height)
+	{
+		x = 0;
+		while (x < game->frame.width)
+		{
+			if (y < half_height)
+				my_pixel_put(&game->frame, x, y,
+					game->map.ceiling_color);
+			else
+				my_pixel_put(&game->frame, x, y, game->map.floor_color);
+			x++;
+		}
+		y++;
+	}
 }

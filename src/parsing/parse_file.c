@@ -6,12 +6,16 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:11:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:14:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/*
+** A line is considered empty when it has no printable content. Such
+** lines are ignored before the map starts.
+*/
 static int	is_line_empty(char *line)
 {
 	int	i;
@@ -35,11 +39,14 @@ static void	validate_cub_extension(const char *path, t_game *game)
 		error_exit("File name cannot be only .cub", game);
 }
 
-static void	process_header_line(char *line, int fd, t_game *game)
+/*
+** Parses one non-empty line before the map. The current line is stored
+** in the game so that error_exit can free it if a parser reports an error.
+*/
+static void	handle_header_line(char *line, int fd, t_game *game)
 {
 	game->current_line = line;
-	if (!parse_texture_line(line, game)
-		&& !parse_color_line(line, game))
+	if (!parse_texture_line(line, game) && !parse_color_line(line, game))
 	{
 		game->current_line = NULL;
 		free(line);
@@ -49,6 +56,10 @@ static void	process_header_line(char *line, int fd, t_game *game)
 	game->current_line = NULL;
 }
 
+/*
+** Reads the file line by line. Texture and color lines come first. Once
+** all six headers exist, the next non-empty line starts the map.
+*/
 static void	process_scene_lines(int fd, t_game *game)
 {
 	char	*line;
@@ -62,15 +73,14 @@ static void	process_scene_lines(int fd, t_game *game)
 			line = get_next_line(fd);
 			continue ;
 		}
-		if (!game->map.no_path || !game->map.so_path || !game->map.we_path
-			|| !game->map.ea_path || game->map.floor_color < 0
-			|| game->map.ceiling_color < 0)
-			process_header_line(line, fd, game);
-		else
+		if (game->map.no_path && game->map.so_path && game->map.we_path
+			&& game->map.ea_path && game->map.floor_color >= 0
+			&& game->map.ceiling_color >= 0)
 		{
 			parse_map(fd, line, game);
 			return ;
 		}
+		handle_header_line(line, fd, game);
 		free(line);
 		line = get_next_line(fd);
 	}

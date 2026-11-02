@@ -6,12 +6,11 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/25 21:22:54 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:30:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include "cub3d_bonus.h"
 
 int	main(int argc, char **argv)
 {
@@ -20,18 +19,12 @@ int	main(int argc, char **argv)
 	if (argc != 2)
 		error_exit("Usage: ./cub3d <map.cub>", NULL);
 	init_game_data(&game);
-	if (!bonus_menu_mode(&game, argv[1]))
-	{
-		parse_cub_file(argv[1], &game);
-		init_player(&game);
-		init_mlx(&game);
-		init_textures(&game);
-		bonus_init(&game);
-	}
+	parse_cub_file(argv[1], &game);
+	init_player(&game);
+	init_mlx(&game);
+	init_textures(&game);
 	mlx_hook(game.win_ptr, 2, 1L << 0, key_press_handler, &game);
 	mlx_hook(game.win_ptr, 3, 1L << 1, key_release_handler, &game);
-	mlx_hook(game.win_ptr, 6, 1L << 6, bonus_mouse_hook, &game);
-	mlx_hook(game.win_ptr, 4, 1L << 2, bonus_mouse_button, &game);
 	mlx_hook(game.win_ptr, 17, 0, close_game, &game);
 	mlx_loop_hook(game.mlx_ptr, game_loop, &game);
 	mlx_loop(game.mlx_ptr);

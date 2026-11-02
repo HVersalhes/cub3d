@@ -6,28 +6,17 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:24:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include "cub3d_bonus.h"
 
-static int	check_ray_hit(t_game *game, t_ray *ray)
-{
-	char	tile;
-
-	tile = game->map.grid[ray->map_y][ray->map_x];
-	if (tile == '1')
-		return (1);
-	if (tile == 'D' && bonus_door_blocks(game, ray))
-	{
-		ray->is_door = 1;
-		return (1);
-	}
-	return (0);
-}
-
+/*
+** DDA (Digital Differential Analyzer) walks through the grid one cell
+** at a time. At each step it advances on the axis whose next grid line
+** is closer, until a wall is found.
+*/
 void	execute_dda(t_game *game, t_ray *ray)
 {
 	ray->hit = 0;
@@ -45,23 +34,26 @@ void	execute_dda(t_game *game, t_ray *ray)
 			ray->map_y += ray->step_y;
 			ray->side = 1;
 		}
-		if (ray->map_y < 0 || ray->map_y >= game->map.height
-			|| ray->map_x < 0 || ray->map_x >= game->map.width)
+		if (ray->map_x < 0 || ray->map_x >= game->map.width
+			|| ray->map_y < 0 || ray->map_y >= game->map.height)
 			break ;
-		if (check_ray_hit(game, ray))
+		if (game->map.grid[ray->map_y][ray->map_x] == '1')
 			ray->hit = 1;
 	}
 }
 
-void	calculate_wall_projection(t_game *game, t_ray *ray, int x)
+/*
+** Projects the wall height on screen. The perpendicular distance is
+** used instead of the real distance to avoid the fisheye effect.
+*/
+void	calculate_wall_projection(t_game *game, t_ray *ray)
 {
 	if (ray->side == 0)
-		ray->perp_wall_dist = (ray->side_dist_x - ray->delta_dist_x);
+		ray->perp_wall_dist = ray->side_dist_x - ray->delta_dist_x;
 	else
-		ray->perp_wall_dist = (ray->side_dist_y - ray->delta_dist_y);
+		ray->perp_wall_dist = ray->side_dist_y - ray->delta_dist_y;
 	if (ray->perp_wall_dist <= 0.0001)
 		ray->perp_wall_dist = 0.0001;
-	game->z_buffer[x] = ray->perp_wall_dist;
 	ray->line_height = (int)(game->frame.height / ray->perp_wall_dist);
 	ray->draw_start = -ray->line_height / 2 + game->frame.height / 2;
 	if (ray->draw_start < 0)

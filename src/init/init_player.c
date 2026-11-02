@@ -6,61 +6,71 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:24:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:24:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-static void	set_player_north_south(t_player *p, char dir)
+/*
+** The direction vector points to the next cell in front of the player.
+** The plane vector is perpendicular to it and controls the horizontal
+** field of view (0.66 gives the usual 66 degree field of view).
+*/
+static void	set_player_north_south(t_player *player, char direction)
 {
-	if (dir == 'N')
+	if (direction == 'N')
 	{
-		p->dir_x = 0.0;
-		p->dir_y = -1.0;
-		p->plane_x = 0.66;
-		p->plane_y = 0.0;
+		player->dir_x = 0.0;
+		player->dir_y = -1.0;
+		player->plane_x = 0.66;
+		player->plane_y = 0.0;
 	}
-	else if (dir == 'S')
+	else if (direction == 'S')
 	{
-		p->dir_x = 0.0;
-		p->dir_y = 1.0;
-		p->plane_x = -0.66;
-		p->plane_y = 0.0;
+		player->dir_x = 0.0;
+		player->dir_y = 1.0;
+		player->plane_x = -0.66;
+		player->plane_y = 0.0;
 	}
 }
 
-static void	set_player_east_west(t_player *p, char dir)
+static void	set_player_east_west(t_player *player, char direction)
 {
-	if (dir == 'E')
+	if (direction == 'E')
 	{
-		p->dir_x = 1.0;
-		p->dir_y = 0.0;
-		p->plane_x = 0.0;
-		p->plane_y = 0.66;
+		player->dir_x = 1.0;
+		player->dir_y = 0.0;
+		player->plane_x = 0.0;
+		player->plane_y = 0.66;
 	}
-	else if (dir == 'W')
+	else if (direction == 'W')
 	{
-		p->dir_x = -1.0;
-		p->dir_y = 0.0;
-		p->plane_x = 0.0;
-		p->plane_y = -0.66;
+		player->dir_x = -1.0;
+		player->dir_y = 0.0;
+		player->plane_x = 0.0;
+		player->plane_y = -0.66;
 	}
 }
 
+static void	set_player_direction(t_player *player, char direction)
+{
+	if (direction == 'N' || direction == 'S')
+		set_player_north_south(player, direction);
+	else if (direction == 'E' || direction == 'W')
+		set_player_east_west(player, direction);
+}
+
+/*
+** Map coordinates are integers. Adding 0.5 puts the player in the
+** middle of the spawn tile instead of on its top-left corner.
+*/
 void	init_player(t_game *game)
 {
-	t_player	*p;
-	char		dir;
+	t_player	*player;
 
-	p = &game->player;
-	dir = game->map.player_dir;
-	p->pos_x = (double)game->map.player_spawn_x + 0.5;
-	p->pos_y = (double)game->map.player_spawn_y + 0.5;
-	p->move_speed = MOVE_SPEED;
-	p->rot_speed = ROT_SPEED;
-	if (dir == 'N' || dir == 'S')
-		set_player_north_south(p, dir);
-	else if (dir == 'E' || dir == 'W')
-		set_player_east_west(p, dir);
+	player = &game->player;
+	player->pos_x = (double)game->map.player_spawn_x + 0.5;
+	player->pos_y = (double)game->map.player_spawn_y + 0.5;
+	set_player_direction(player, game->map.player_dir);
 }

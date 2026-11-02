@@ -6,29 +6,37 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:27:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/*
+** Rotates both the direction vector and the camera plane by the same
+** angle. The formulas are the standard 2D rotation matrix.
+*/
 void	rotate_player(t_game *game, double angle)
 {
-	t_player	*p;
+	t_player	*player;
 	double		old_dir_x;
 	double		old_plane_x;
-	double		cos_a;
-	double		sin_a;
+	double		cos_angle;
+	double		sin_angle;
 
-	p = &game->player;
-	cos_a = cos(angle);
-	sin_a = sin(angle);
-	old_dir_x = p->dir_x;
-	p->dir_x = p->dir_x * cos_a - p->dir_y * sin_a;
-	p->dir_y = old_dir_x * sin_a + p->dir_y * cos_a;
-	old_plane_x = p->plane_x;
-	p->plane_x = p->plane_x * cos_a - p->plane_y * sin_a;
-	p->plane_y = old_plane_x * sin_a + p->plane_y * cos_a;
+	player = &game->player;
+	cos_angle = cos(angle);
+	sin_angle = sin(angle);
+	old_dir_x = player->dir_x;
+	player->dir_x = player->dir_x * cos_angle
+		- player->dir_y * sin_angle;
+	player->dir_y = old_dir_x * sin_angle
+		+ player->dir_y * cos_angle;
+	old_plane_x = player->plane_x;
+	player->plane_x = player->plane_x * cos_angle
+		- player->plane_y * sin_angle;
+	player->plane_y = old_plane_x * sin_angle
+		+ player->plane_y * cos_angle;
 }
 
 void	update_player_rotation(t_game *game)

@@ -6,32 +6,38 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:10:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:10:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/*
+** Returns a copy of the path contained after the texture identifier.
+** Spaces, tabs and line endings around the path are removed.
+*/
 static char	*extract_path(char *line)
 {
-	int		i;
+	int		start;
 	int		len;
 	char	*path;
 
-	i = 0;
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-		i++;
-	len = ft_strlen(line + i);
-	while (len > 0 && (line[i + len - 1] == ' ' || line[i + len - 1] == '\t'
-			|| line[i + len - 1] == '\n' || line[i + len - 1] == '\r'))
+	start = 0;
+	while (line[start] && (line[start] == ' ' || line[start] == '\t'))
+		start++;
+	len = ft_strlen(line + start);
+	while (len > 0 && (line[start + len - 1] == ' '
+			|| line[start + len - 1] == '\t'
+			|| line[start + len - 1] == '\n'
+			|| line[start + len - 1] == '\r'))
 		len--;
 	if (len <= 0)
 		return (NULL);
-	path = ft_substr(line, i, len);
+	path = ft_substr(line, start, len);
 	return (path);
 }
 
-static int	verify_texture_file(char *path)
+static int	texture_file_exists(char *path)
 {
 	int	fd;
 
@@ -44,21 +50,25 @@ static int	verify_texture_file(char *path)
 	return (1);
 }
 
-static int	set_texture_path(char **dest, char *line, t_game *game)
+/*
+** Stores the path only once. The file is opened here to report a clear
+** error before MiniLibX is initialized.
+*/
+static int	set_texture_path(char **destination, char *line, t_game *game)
 {
 	char	*path;
 
-	if (*dest != NULL)
+	if (*destination != NULL)
 		error_exit("Duplicate texture identifier in scene file", game);
 	path = extract_path(line);
 	if (!path)
 		error_exit("Invalid texture path format", game);
-	if (!verify_texture_file(path))
+	if (!texture_file_exists(path))
 	{
 		free(path);
 		error_exit("Cannot open texture file", game);
 	}
-	*dest = path;
+	*destination = path;
 	return (1);
 }
 

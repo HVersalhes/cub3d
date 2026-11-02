@@ -6,17 +6,18 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:16:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:16:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include "cub3d_bonus.h"
 
+/*
+** Key presses only change flags. The game loop reads the flags every
+** frame, which produces smooth movement while a key is held.
+*/
 int	key_press_handler(int keycode, t_game *game)
 {
-	if (bonus_key_press(keycode, game))
-		return (0);
 	if (keycode == KEY_ESC)
 		close_game(game);
 	else if (keycode == KEY_W)
@@ -31,14 +32,6 @@ int	key_press_handler(int keycode, t_game *game)
 		game->keys.rot_left = true;
 	else if (keycode == KEY_RIGHT)
 		game->keys.rot_right = true;
-	else if (keycode == KEY_E || keycode == KEY_SPACE)
-	{
-		if (!game->keys.door_interact_held)
-		{
-			game->keys.door_interact = true;
-			game->keys.door_interact_held = true;
-		}
-	}
 	return (0);
 }
 
@@ -56,7 +49,5 @@ int	key_release_handler(int keycode, t_game *game)
 		game->keys.rot_left = false;
 	else if (keycode == KEY_RIGHT)
 		game->keys.rot_right = false;
-	else if (keycode == KEY_E || keycode == KEY_SPACE)
-		game->keys.door_interact_held = false;
 	return (0);
 }

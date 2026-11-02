@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:16:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:27:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,45 @@
 
 static void	move_forward_backward(t_game *game, double *dx, double *dy)
 {
-	double	spd;
+	double	speed;
 
-	spd = game->player.move_speed;
+	speed = game->player.move_speed;
 	if (game->keys.w)
 	{
-		*dx += game->player.dir_x * spd;
-		*dy += game->player.dir_y * spd;
+		*dx += game->player.dir_x * speed;
+		*dy += game->player.dir_y * speed;
 	}
 	if (game->keys.s)
 	{
-		*dx -= game->player.dir_x * spd;
-		*dy -= game->player.dir_y * spd;
+		*dx -= game->player.dir_x * speed;
+		*dy -= game->player.dir_y * speed;
 	}
 }
 
+/*
+** Strafe uses the camera plane, which is perpendicular to dir_*.
+*/
 static void	move_strafe(t_game *game, double *dx, double *dy)
 {
-	double	spd;
+	double	speed;
 
-	spd = game->player.move_speed;
+	speed = game->player.move_speed;
 	if (game->keys.d)
 	{
-		*dx += game->player.plane_x * spd;
-		*dy += game->player.plane_y * spd;
+		*dx += game->player.plane_x * speed;
+		*dy += game->player.plane_y * speed;
 	}
 	if (game->keys.a)
 	{
-		*dx -= game->player.plane_x * spd;
-		*dy -= game->player.plane_y * spd;
+		*dx -= game->player.plane_x * speed;
+		*dy -= game->player.plane_y * speed;
 	}
 }
 
+/*
+** X and Y are tested separately. If one axis is blocked, the player can
+** still slide along the wall on the other axis.
+*/
 static void	apply_movement(t_game *game, double dx, double dy)
 {
 	double	new_x;

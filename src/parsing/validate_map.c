@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:11:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:11:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 static int	is_walkable_tile(char c)
 {
-	return (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W'
-		|| c == 'D' || c == 'T');
+	return (c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
+/*
+** Checks the eight neighbours of a walkable tile. If any neighbour is a
+** space, the map has an opening and the player could leave the level.
+*/
 static void	check_tile_enclosed(t_game *game, int y, int x)
 {
 	int	dy;
@@ -56,6 +59,10 @@ static void	check_player_spawn(t_game *game, int y, int x, char c)
 	}
 }
 
+/*
+** Only walls, floor, outside spaces and the four spawn directions are
+** allowed in the mandatory part of cub3D.
+*/
 static void	validate_tiles(t_game *game)
 {
 	int		y;
@@ -70,8 +77,7 @@ static void	validate_tiles(t_game *game)
 		{
 			c = game->map.grid[y][x];
 			if (c != '0' && c != '1' && c != 'N' && c != 'S'
-				&& c != 'E' && c != 'W' && c != ' ' && c != 'D'
-				&& c != 'T')
+				&& c != 'E' && c != 'W' && c != ' ')
 				error_exit("Invalid character found in map", game);
 			check_player_spawn(game, y, x, c);
 			if (is_walkable_tile(c))

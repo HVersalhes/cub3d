@@ -6,7 +6,7 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:11:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/10/19 00:13:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,27 @@
 
 static void	free_map_nodes(t_map_node *head)
 {
-	t_map_node	*tmp;
+	t_map_node	*next;
 
 	while (head)
 	{
-		tmp = head->next;
+		next = head->next;
 		if (head->line)
 			free(head->line);
 		free(head);
-		head = tmp;
+		head = next;
 	}
 }
 
+/*
+** Removes the line ending and appends the line to the linked list.
+** The first line of the map is passed by the caller and is already owned
+** by this function.
+*/
 static void	append_map_node(t_map_node **head, char *line, t_game *game)
 {
 	t_map_node	*new_node;
-	t_map_node	*curr;
+	t_map_node	*current;
 	int			len;
 
 	len = ft_strlen(line);
@@ -45,18 +50,22 @@ static void	append_map_node(t_map_node **head, char *line, t_game *game)
 	new_node->line = line;
 	new_node->next = NULL;
 	if (!*head)
-		*head = new_node;
-	else
 	{
-		curr = *head;
-		while (curr->next)
-			curr = curr->next;
-		curr->next = new_node;
+		*head = new_node;
+		return ;
 	}
+	current = *head;
+	while (current->next)
+		current = current->next;
+	current->next = new_node;
 }
 
-static void	read_all_map_lines(int fd, char *first_line,
-	t_map_node **head, t_game *game)
+/*
+** Reads every remaining line as part of the map. A blank line marks the
+** end of the map, so any non-empty line after it is an error.
+*/
+static void	read_all_map_lines(int fd, char *first_line, t_map_node **head,
+	t_game *game)
 {
 	char	*line;
 	int		map_ended;
@@ -85,10 +94,13 @@ static void	read_all_map_lines(int fd, char *first_line,
 	}
 }
 
+/*
+** Builds the rectangular grid used by the game. Shorter lines are padded
+** with spaces, which are treated as solid cells outside the walkable area.
+*/
 static void	build_rectangular_grid(t_map_node *head, t_game *game,
-	int count, int max_w)
+	int count, int max_width)
 {
-	t_map_node	*curr;
 	int			i;
 
 	game->map.grid = ft_calloc(count + 1, sizeof(char *));
@@ -97,46 +109,46 @@ static void	build_rectangular_grid(t_map_node *head, t_game *game,
 		free_map_nodes(head);
 		error_exit("Allocation failed for map grid", game);
 	}
-	curr = head;
-	i = -1;
-	while (++i < count && curr)
+	i = 0;
+	while (i < count && head)
 	{
-		game->map.grid[i] = malloc(sizeof(char) * (max_w + 1));
+		game->map.grid[i] = malloc(sizeof(char) * (max_width + 1));
 		if (!game->map.grid[i])
 		{
 			free_map_nodes(head);
 			error_exit("Allocation failed for map line", game);
 		}
-		ft_memset(game->map.grid[i], ' ', max_w);
-		ft_memcpy(game->map.grid[i], curr->line, ft_strlen(curr->line));
-		game->map.grid[i][max_w] = '\0';
-		curr = curr->next;
+		ft_memset(game->map.grid[i], ' ', max_width);
+		ft_memcpy(game->map.grid[i], head->line, ft_strlen(head->line));
+		game->map.grid[i][max_width] = '\0';
+		head = head->next;
+		i++;
 	}
 }
 
 void	parse_map(int fd, char *first_line, t_game *game)
 {
 	t_map_node	*head;
-	t_map_node	*curr;
+	t_map_node	*current;
 	int			count;
-	int			max_w;
+	int			max_width;
 	int			len;
 
 	head = NULL;
 	read_all_map_lines(fd, first_line, &head, game);
 	count = 0;
-	max_w = 0;
-	curr = head;
-	while (curr)
+	max_width = 0;
+	current = head;
+	while (current)
 	{
-		len = ft_strlen(curr->line);
-		if (len > max_w)
-			max_w = len;
+		len = ft_strlen(current->line);
+		if (len > max_width)
+			max_width = len;
 		count++;
-		curr = curr->next;
+		current = current->next;
 	}
 	game->map.height = count;
-	game->map.width = max_w;
-	build_rectangular_grid(head, game, count, max_w);
+	game->map.width = max_width;
+	build_rectangular_grid(head, game, count, max_width);
 	free_map_nodes(head);
 }

@@ -100,7 +100,13 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0)
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
+	if (BUFFER_SIZE <= 0)
 		return (NULL);
 	stash = read_and_stash(fd, stash);
 	if (!stash)

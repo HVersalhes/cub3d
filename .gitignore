@@ -1,25 +1,17 @@
 # Executables
 cub3d
-.build_mode
 
-# Object files & Libraries
+# Object files and libraries
 *.o
 *.a
-obj/
-obj_bonus/
-libft/obj/
-libft/libft.a
 
-# MiniLibX build artifacts
+# MiniLibX build files
 minilibx/obj/
-minilibx/*.o
-minilibx/*.a
 minilibx/Makefile.gen
-minilibx/test/makefile.gen
-minilibx/test/*.o
+minilibx/test/Makefile.gen
 minilibx/test/mlx-test
 
-# Temporary, archives & IDE files
+# Temporary and editor files
 .vscode/
 *.tar.gz
 *.swp
