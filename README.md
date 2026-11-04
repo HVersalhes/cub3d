@@ -12,7 +12,7 @@ Autores: **hcosta** e **hcuessec**.
 - `make`;
 - compilador de C em modo C99 (`cc`);
 - bibliotecas de desenvolvimento `libX11` e `libXext`;
-- MiniLibX e Libft incluídas neste repositório.
+- Libft incluída neste repositório.
 
 Além das bibliotecas incluídas, o projeto usa a biblioteca matemática
 (`-lm`) e as bibliotecas do sistema X11/Xext exigidas pela MiniLibX.
