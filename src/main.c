@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/25 21:22:54 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/04 18:49:42 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	main(int argc, char **argv)
 	t_game	game;
 
 	if (argc != 2)
-		error_exit("Usage: ./cub3d <map.cub>", NULL);
+		error_exit("Usage: ./cub3D <map.cub>", NULL);
 	init_game_data(&game);
 	parse_cub_file(argv[1], &game);
 	init_player(&game);

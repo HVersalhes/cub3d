@@ -3,14 +3,14 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hcosta <marvin@42.fr>                      +#+  +:+       +#+         #
+#    By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/09/15 18:12:12 by hcosta            #+#    #+#              #
-#    Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr        #
+#    Updated: 2026/11/04 17:23:30 by hcuessec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		= cub3d
+NAME		= cub3D
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror -Iinclude -Ilibft -Iminilibx
 LDLIBS		= -Lminilibx -lmlx -Llibft -lft -lXext -lX11 -lm

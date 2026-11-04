@@ -3,19 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   render_floor_ceiling.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/19 00:16:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Created: 2026/11/04 17:48:19 by hcuessec          #+#    #+#             */
+/*   Updated: 2026/11/04 17:48:30 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** Writes one pixel in the framebuffer. The address of a pixel is:
-** data_addr + y * line_len + x * (bits_per_pixel / 8).
-*/
 void	my_pixel_put(t_img *img, int x, int y, int color)
 {
 	char	*destination;
@@ -27,10 +23,6 @@ void	my_pixel_put(t_img *img, int x, int y, int color)
 	*(unsigned int *)destination = (unsigned int)color;
 }
 
-/*
-** The top half of the screen is the ceiling and the bottom half is the
-** floor. Walls are drawn later on top of these colors.
-*/
 void	render_ceiling_floor(t_game *game)
 {
 	int	x;

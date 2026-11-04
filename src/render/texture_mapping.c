@@ -3,19 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   texture_mapping.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/19 00:30:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Created: 2026/11/04 17:41:28 by hcuessec          #+#    #+#             */
+/*   Updated: 2026/11/04 17:49:18 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** Chooses the texture that faces the player. A vertical wall hit while
-** moving east shows its west face, and so on.
-*/
 int	get_wall_texture_index(t_ray *ray)
 {
 	if (ray->side == 0)
@@ -29,10 +25,6 @@ int	get_wall_texture_index(t_ray *ray)
 	return (1);
 }
 
-/*
-** Finds where the ray hit the wall (0.0 = left edge, 1.0 = right edge)
-** and converts that position into an X coordinate in the texture.
-*/
 static int	calculate_texture_x(t_game *game, t_ray *ray, t_img *texture)
 {
 	double	wall_x;
@@ -51,10 +43,6 @@ static int	calculate_texture_x(t_game *game, t_ray *ray, t_img *texture)
 	return (tex_x);
 }
 
-/*
-** Darkens the side walls a little so corners are easier to see. Each
-** color channel is multiplied by 3/4.
-*/
 static int	shade_color(int color)
 {
 	int	red;
@@ -67,10 +55,6 @@ static int	shade_color(int color)
 	return ((red << 16) | (green << 8) | blue);
 }
 
-/*
-** Draws one vertical slice. tex_pos is a floating-point position inside
-** the texture; it advances by "step" for every screen pixel.
-*/
 static void	draw_column_pixels(t_game *game, t_ray *ray,
 	t_img *texture, int x)
 {

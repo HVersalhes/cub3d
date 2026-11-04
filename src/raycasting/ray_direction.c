@@ -3,20 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ray_direction.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/19 00:24:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Created: 2026/11/04 17:43:23 by hcuessec          #+#    #+#             */
+/*   Updated: 2026/11/04 18:42:00 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** Converts a screen column into a ray direction. The camera plane makes
-** the leftmost column point to the left of the view and the rightmost
-** column point to the right.
-*/
 void	calculate_ray_vector(t_game *game, t_ray *ray, int x)
 {
 	ray->camera_x = 2.0 * x / (double)game->frame.width - 1.0;
@@ -36,10 +31,6 @@ void	calculate_ray_vector(t_game *game, t_ray *ray, int x)
 		ray->delta_dist_y = fabs(1.0 / ray->ray_dir_y);
 }
 
-/*
-** Distance from the player to the first vertical and horizontal grid
-** lines. DDA uses these values to jump from one map cell to the next.
-*/
 void	init_ray_step(t_game *game, t_ray *ray)
 {
 	if (ray->ray_dir_x < 0)

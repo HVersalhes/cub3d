@@ -3,19 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/19 00:24:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Created: 2026/11/04 17:43:39 by hcuessec          #+#    #+#             */
+/*   Updated: 2026/11/04 17:43:42 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** Casts one ray for every screen column. Each ray produces one vertical
-** textured wall slice.
-*/
 void	perform_raycasting(t_game *game)
 {
 	t_ray	ray;

@@ -1,110 +1,52 @@
+*This project has been created as part of the 42 curriculum by hcosta, hcuessec.*
+
 # cub3D
 
-Implementação da **parte obrigatória** do projeto **cub3D** do currículo 42:
-um pequeno motor de raycasting em C, com janela MiniLibX, paredes texturizadas,
-movimento em primeira pessoa, colisão e validação de mapas no formato `.cub`.
+## Description
 
-Autores: **hcosta** e **hcuessec**.
+**cub3D** is a first-person 3D maze renderer written in **C** with the **MiniLibX** library, inspired by *Wolfenstein 3D*. The goal is to build a real-time view of a maze from a 2D `.cub` map using **raycasting**, without any 3D API such as OpenGL.
 
-## Requisitos
+Overview:
+- A `.cub` file defines four wall textures (N/S/E/W), floor and ceiling colors, and the map grid.
+- For each screen column (1200 columns, 1200x800 window) a ray is cast from the player. The **DDA** algorithm finds the first wall hit and its perpendicular distance (no fisheye effect).
+- The wall slice is drawn with the matching directional XPM texture, and the frame is composed in an off-screen image before being displayed.
+- The player moves with collision detection and wall sliding.
 
-- Linux com servidor X11;
-- `make`;
-- compilador de C em modo C99 (`cc`);
-- bibliotecas de desenvolvimento `libX11` e `libXext`;
-- Libft incluída neste repositório.
+## Instructions
 
-Além das bibliotecas incluídas, o projeto usa a biblioteca matemática
-(`-lm`) e as bibliotecas do sistema X11/Xext exigidas pela MiniLibX.
-
-## Compilação
+**Requirements** (Linux/X11): `cc`, `make`, `libx11-dev`, `libxext-dev`.
 
 ```sh
-make          # compila e gera ./cub3d
-make re       # limpa tudo e compila novamente
-make clean    # remove os objetos
-make fclean   # remove os objetos, bibliotecas e o executável
+sudo apt-get install -y build-essential libx11-dev libxext-dev
 ```
 
-O `Makefile` foi escrito para ser simples: compila os ficheiros de `src/`,
-compila a `libft` e a MiniLibX e liga tudo num único executável chamado
-`cub3d`. Não existem alvos nem ficheiros de configuração para modos
-alternativos.
-
-As únicas flags de compilação adicionadas ao código do projeto são
-`-Wall -Wextra -Werror`. Não é usada nenhuma flag de otimização nem uma flag
-`-std` explícita, porque o ambiente já compila em C99.
-
-## Execução
+**Compilation**
 
 ```sh
-./cub3d maps/valid/simple.cub
+make        # builds libft, minilibx and ./cub3D
+make clean  # removes object files
+make fclean # removes objects and binary
+make re     # full rebuild
 ```
 
-O programa recebe exatamente um argumento: o caminho de um ficheiro `.cub`.
-Se o ficheiro não existir, se o mapa for inválido ou se faltar algum elemento
-obrigatório, o programa imprime
+**Execution**
 
-```text
-Error
-<mensagem>
+```sh
+./cub3D maps/valid/simple.cub
 ```
 
-no `stderr` e termina com código de saída diferente de zero.
+Other maps: `maps/valid/{minimal,complex_shape,arena}.cub`. Invalid maps for error testing are in `maps/invalid/`. On any error the program prints `Error` followed by a message and exits.
 
-## Controlos
+**Controls**
 
-| Tecla / ação   | Efeito                                  |
-|----------------|-----------------------------------------|
-| `W` / `S`      | andar para a frente / para trás         |
-| `A` / `D`      | andar para a esquerda / direita         |
-| `←` / `→`      | rodar a câmara                          |
-| `Esc`          | sair do jogo                            |
-| fechar janela  | sair do jogo                            |
+| Key | Action |
+|:---:|:---|
+| `W` / `S` | Move forward / backward |
+| `A` / `D` | Strafe left / right |
+| `←` / `→` | Rotate camera |
+| `ESC` or window `[X]` | Quit (frees all resources) |
 
-O movimento usa a direção e o plano da câmara, por isso andar para os lados
-é sempre perpendicular à direção em que o jogador está a olhar. A colisão é
-testada nos quatro cantos de um pequeno quadrado à volta do jogador; se um
-eixo estiver bloqueado, o outro continua livre, permitindo deslizar ao longo
-das paredes.
-
-## Registo de ações
-
-As ações são escritas no terminal com `ft_printf`. Cada tecla de movimento ou
-rotação regista uma única linha quando é pressionada, por exemplo:
-
-```text
-[cub3d] move forward
-[cub3d] strafe left
-[cub3d] rotate left
-```
-
-O `ESC` e o botão de fechar a janela (`X`) também registam o motivo da saída:
-
-```text
-[cub3d] exit (ESC)
-[cub3d] exit (X)
-```
-
-O auto-repeat do teclado é desativado enquanto o jogo está aberto e reposto na
-saída, para que manter uma tecla pressionada produza apenas uma mensagem.
-
-## Funcionalidades
-
-- leitura de ficheiros `.cub` com texturas `NO`, `SO`, `WE`, `EA` e cores
-  `F` (chão) e `C` (teto);
-- validação de texturas, cores RGB, caracteres do mapa, limites do mapa e
-  existência de exatamente um ponto de spawn;
-- raycasting com o algoritmo DDA e projeção vertical das paredes;
-- texturas XPM nas quatro orientações, com correção de perspetiva;
-- chão e teto preenchidos com as cores definidas no mapa;
-- movimento suave com `WASD`, rotação com as setas e colisão com paredes;
-- gestão de eventos da MiniLibX (teclado e fecho da janela);
-- libertação completa de memória em todos os caminhos de saída.
-
-## Formato do mapa
-
-Exemplo mínimo:
+**Map format**
 
 ```text
 NO textures/wall_north.xpm
@@ -117,87 +59,44 @@ C 25,30,65
 
 11111111
 10000001
-10011001
 100N0001
 11111111
 ```
 
-Os seis elementos de cabeçalho (`NO`, `SO`, `WE`, `EA`, `F` e `C`) têm de
-aparecer antes do mapa. As cores usam três canais entre 0 e 255.
+- `NO/SO/WE/EA`: texture paths; `F/C`: floor/ceiling color as `R,G,B` (0–255).
+- Map characters: `1` wall, `0` floor, `N/S/E/W` player start and direction, space = void.
+- The map must have exactly one player and be fully enclosed by walls.
 
-Símbolos permitidos no mapa:
-
-| Símbolo   | Significado                                  |
-|-----------|----------------------------------------------|
-| `0`       | chão                                         |
-| `1`       | parede                                       |
-| `N/S/E/W` | posição inicial e direção do jogador         |
-| espaço    | exterior do mapa (não pode tocar no chão)    |
-
-O mapa tem de ser fechado por paredes, ter pelo menos `3x3` células e conter
-exatamente um `N`, `S`, `E` ou `W`.
-
-## Mapas incluídos
-
-Mapas válidos:
-
-- `maps/valid/minimal.cub` — mapa mínimo;
-- `maps/valid/simple.cub` — mapa básico;
-- `maps/valid/complex_shape.cub` — paredes com forma irregular;
-- `maps/valid/arena.cub` — mapa maior com pilares, útil para testar movimento.
-
-Mapas inválidos em `maps/invalid/`:
-
-- `bad_map_chars.cub` — caractere inválido;
-- `empty_line_in_map.cub` — linha vazia dentro do mapa;
-- `invalid_color.cub` — canal RGB fora do intervalo;
-- `missing_texture.cub` — textura obrigatória em falta;
-- `no_player.cub` — mapa sem jogador;
-- `no_walls.cub` — mapa aberto;
-- `two_players.cub` — dois pontos de spawn.
-
-## Estrutura
+**Project structure**
 
 ```text
-include/              cabeçalhos e estruturas do jogo
-src/parsing/          leitura e validação do ficheiro .cub
-src/raycasting/       direção dos raios, DDA e projeção das paredes
-src/render/           framebuffer, chão/teto e texturas
-src/player/           movimento, rotação e colisão
-src/events/           teclado
-src/init/             inicialização do jogo, janela e texturas
-src/exit/             erros e libertação de memória
-libft/                funções utilitárias, get_next_line e ft_printf
-textures/             texturas XPM das quatro paredes
-maps/                 mapas válidos e inválidos
+include/   cub3d.h, cub3d_structs.h
+libft/     custom C library (incl. get_next_line, ft_printf)
+minilibx/  MiniLibX for X11
+maps/      valid/ and invalid/ test maps
+textures/  wall XPM textures
+src/
+├── main.c
+├── init/        data, MLX window, player, textures
+├── parsing/     .cub parsing and map validation
+├── raycasting/  ray direction, DDA, column loop
+├── render/      floor/ceiling, texture mapping, frame
+├── player/      movement, rotation, collision
+├── events/      keyboard handling
+└── exit/        error handling and cleanup
 ```
 
-## Qualidade e testes
+## Resources
 
-- `norminette src include libft/*.c libft/*.h` sem erros;
-- compilação com `make re` sem erros nem warnings no código do projeto;
-- testes de todos os mapas inválidos, confirmando mensagem de erro e saída
-  com código diferente de zero;
-- testes de execução de todos os mapas válidos, incluindo fecho da janela;
-- Valgrind sem fugas de memória:
+- [Lode's Computer Graphics Tutorial — Raycasting](https://lodev.org/cgtutor/raycasting.html)
+- [F. Permadi's Ray-Casting Tutorial](https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/)
+- [42 Docs — MiniLibX](https://harm-smits.github.io/42docs/libs/minilibx)
+- Amanatides & Woo, *A Fast Voxel Traversal Algorithm for Ray Tracing* (Eurographics '87)
+- Fabien Sanglard, *Game Engine Black Book: Wolfenstein 3D*
 
-```sh
-valgrind --leak-check=full --show-leak-kinds=all \
-    ./cub3d maps/valid/simple.cub
-```
+**Use of AI**
 
-O resultado esperado é `All heap blocks were freed -- no leaks are possible`,
-sem blocos *still reachable* no código do projeto.
-
-## Funções externas
-
-O código do projeto usa apenas as funções permitidas pela parte obrigatória do
-subject: `open`, `close`, `read`, `write`, `malloc`, `free`, `exit`, funções de
-`<math.h>` e funções da MiniLibX. A Libft é usada para operações de memória,
-strings, escrita em descritores, leitura de linhas com `get_next_line` e
-formatação da saída com `ft_printf`.
-
-## Créditos
-
-Projeto desenvolvido para o currículo 42 por **hcosta** e **hcuessec**.
-MiniLibX e Libft são bibliotecas fornecidas pelo campus 42.
+AI (an LLM assistant) was used as a support tool for:
+- Checking the rotation and perpendicular-distance math (`src/player/rotation.c`, `src/raycasting/dda_algorithm.c`).
+- Reviewing cleanup paths in `src/exit/free.c` for memory leaks.
+- Helping write and structure this README.md

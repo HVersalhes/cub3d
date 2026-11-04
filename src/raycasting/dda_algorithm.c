@@ -3,20 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   dda_algorithm.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: hcuessec <hcuessec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/19 00:24:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Created: 2026/11/04 17:42:45 by hcuessec          #+#    #+#             */
+/*   Updated: 2026/11/04 17:43:04 by hcuessec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** DDA (Digital Differential Analyzer) walks through the grid one cell
-** at a time. At each step it advances on the axis whose next grid line
-** is closer, until a wall is found.
-*/
 void	execute_dda(t_game *game, t_ray *ray)
 {
 	ray->hit = 0;
@@ -42,10 +37,6 @@ void	execute_dda(t_game *game, t_ray *ray)
 	}
 }
 
-/*
-** Projects the wall height on screen. The perpendicular distance is
-** used instead of the real distance to avoid the fisheye effect.
-*/
 void	calculate_wall_projection(t_game *game, t_ray *ray)
 {
 	if (ray->side == 0)
