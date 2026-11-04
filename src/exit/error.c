@@ -26,3 +26,13 @@ void	error_exit(const char *message, t_game *game)
 		free_game(game);
 	exit(EXIT_FAILURE);
 }
+
+/*
+** Normal game exit. It is shared by the ESC key and the window close
+** button so both paths release the same resources.
+*/
+void	quit_game(t_game *game)
+{
+	free_game(game);
+	exit(EXIT_SUCCESS);
+}

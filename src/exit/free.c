@@ -72,6 +72,7 @@ static void	free_mlx_resources(t_game *game)
 	game->win_ptr = NULL;
 	if (game->mlx_ptr)
 	{
+		mlx_do_key_autorepeaton(game->mlx_ptr);
 		mlx_destroy_display(game->mlx_ptr);
 		free(game->mlx_ptr);
 		game->mlx_ptr = NULL;
@@ -99,7 +100,7 @@ void	free_game(t_game *game)
 
 int	close_game(t_game *game)
 {
-	free_game(game);
-	exit(EXIT_SUCCESS);
+	ft_printf("[cub3d] exit (X)\n");
+	quit_game(game);
 	return (0);
 }

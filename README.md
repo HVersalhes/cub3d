@@ -68,6 +68,27 @@ testada nos quatro cantos de um pequeno quadrado à volta do jogador; se um
 eixo estiver bloqueado, o outro continua livre, permitindo deslizar ao longo
 das paredes.
 
+## Registo de ações
+
+As ações são escritas no terminal com `ft_printf`. Cada tecla de movimento ou
+rotação regista uma única linha quando é pressionada, por exemplo:
+
+```text
+[cub3d] move forward
+[cub3d] strafe left
+[cub3d] rotate left
+```
+
+O `ESC` e o botão de fechar a janela (`X`) também registam o motivo da saída:
+
+```text
+[cub3d] exit (ESC)
+[cub3d] exit (X)
+```
+
+O auto-repeat do teclado é desativado enquanto o jogo está aberto e reposto na
+saída, para que manter uma tecla pressionada produza apenas uma mensagem.
+
 ## Funcionalidades
 
 - leitura de ficheiros `.cub` com texturas `NO`, `SO`, `WE`, `EA` e cores
@@ -146,7 +167,7 @@ src/player/           movimento, rotação e colisão
 src/events/           teclado
 src/init/             inicialização do jogo, janela e texturas
 src/exit/             erros e libertação de memória
-libft/                funções utilitárias e get_next_line
+libft/                funções utilitárias, get_next_line e ft_printf
 textures/             texturas XPM das quatro paredes
 maps/                 mapas válidos e inválidos
 ```
@@ -173,7 +194,8 @@ sem blocos *still reachable* no código do projeto.
 O código do projeto usa apenas as funções permitidas pela parte obrigatória do
 subject: `open`, `close`, `read`, `write`, `malloc`, `free`, `exit`, funções de
 `<math.h>` e funções da MiniLibX. A Libft é usada para operações de memória,
-strings, escrita em descritores e leitura de linhas com `get_next_line`.
+strings, escrita em descritores, leitura de linhas com `get_next_line` e
+formatação da saída com `ft_printf`.
 
 ## Créditos
 

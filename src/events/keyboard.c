@@ -6,11 +6,24 @@
 /*   By: hcosta <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/19 00:16:00 by hcosta            #+#    #+#             */
-/*   Updated: 2026/11/02 12:00:00 by hcosta           ###   ########.fr       */
+/*   Updated: 2026/11/04 12:00:00 by hcosta           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+/*
+** Updates one key flag only when it really changes. A message is printed
+** only when the action starts, never when the key is released.
+*/
+static void	update_key_state(bool *state, bool pressed, const char *action)
+{
+	if (*state == pressed)
+		return ;
+	*state = pressed;
+	if (pressed)
+		ft_printf("[cub3d] %s\n", action);
+}
 
 /*
 ** Key presses only change flags. The game loop reads the flags every
@@ -19,35 +32,38 @@
 int	key_press_handler(int keycode, t_game *game)
 {
 	if (keycode == KEY_ESC)
-		close_game(game);
+	{
+		ft_printf("[cub3d] exit (ESC)\n");
+		quit_game(game);
+	}
 	else if (keycode == KEY_W)
-		game->keys.w = true;
+		update_key_state(&game->keys.w, true, "move forward");
 	else if (keycode == KEY_S)
-		game->keys.s = true;
+		update_key_state(&game->keys.s, true, "move backward");
 	else if (keycode == KEY_A)
-		game->keys.a = true;
+		update_key_state(&game->keys.a, true, "strafe left");
 	else if (keycode == KEY_D)
-		game->keys.d = true;
+		update_key_state(&game->keys.d, true, "strafe right");
 	else if (keycode == KEY_LEFT)
-		game->keys.rot_left = true;
+		update_key_state(&game->keys.rot_left, true, "rotate left");
 	else if (keycode == KEY_RIGHT)
-		game->keys.rot_right = true;
+		update_key_state(&game->keys.rot_right, true, "rotate right");
 	return (0);
 }
 
 int	key_release_handler(int keycode, t_game *game)
 {
 	if (keycode == KEY_W)
-		game->keys.w = false;
+		update_key_state(&game->keys.w, false, "move forward");
 	else if (keycode == KEY_S)
-		game->keys.s = false;
+		update_key_state(&game->keys.s, false, "move backward");
 	else if (keycode == KEY_A)
-		game->keys.a = false;
+		update_key_state(&game->keys.a, false, "strafe left");
 	else if (keycode == KEY_D)
-		game->keys.d = false;
+		update_key_state(&game->keys.d, false, "strafe right");
 	else if (keycode == KEY_LEFT)
-		game->keys.rot_left = false;
+		update_key_state(&game->keys.rot_left, false, "rotate left");
 	else if (keycode == KEY_RIGHT)
-		game->keys.rot_right = false;
+		update_key_state(&game->keys.rot_right, false, "rotate right");
 	return (0);
 }

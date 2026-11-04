@@ -40,6 +40,7 @@
 /* exit and cleanup */
 void	error_exit(const char *message, t_game *game);
 void	free_game(t_game *game);
+void	quit_game(t_game *game);
 int		close_game(t_game *game);
 
 /* initialization */

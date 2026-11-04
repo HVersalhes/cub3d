@@ -22,6 +22,7 @@ void	init_mlx(t_game *game)
 	game->mlx_ptr = mlx_init();
 	if (!game->mlx_ptr)
 		error_exit("Failed to initialize MiniLibX", game);
+	mlx_do_key_autorepeatoff(game->mlx_ptr);
 	game->win_ptr = mlx_new_window(game->mlx_ptr, WIN_WIDTH, WIN_HEIGHT,
 			"cub3D");
 	if (!game->win_ptr)
