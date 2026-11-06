@@ -12,10 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** A cell is solid when it is a wall, an outside space, or outside the
-** map. Such cells cannot be entered by the player.
-*/
 static int	is_solid_cell(t_game *game, double x, double y)
 {
 	int		map_x;
@@ -34,10 +30,6 @@ static int	is_solid_cell(t_game *game, double x, double y)
 	return (0);
 }
 
-/*
-** Checks the four corners of a small square around the player. This
-** prevents the camera from touching or crossing a wall.
-*/
 int	is_valid_walk_position(t_game *game, double x, double y)
 {
 	if (is_solid_cell(game, x - COLLISION_RADIUS, y - COLLISION_RADIUS))

@@ -12,11 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** Creates the connection with the X server, the window and the image
-** used as the framebuffer. Rendering writes directly into that image
-** and then asks MiniLibX to display it.
-*/
 void	init_mlx(t_game *game)
 {
 	game->mlx_ptr = mlx_init();

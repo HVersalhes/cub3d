@@ -1,16 +1,12 @@
-# Executables
 cub3d
 cub3D
 
-# Object files and libraries
 *.o
 *.a
 
-# MiniLibX directory
 minilibx/
 minilibx-linux/
 
-# Temporary and editor files
 .vscode/
 *.tar.gz
 *.swp

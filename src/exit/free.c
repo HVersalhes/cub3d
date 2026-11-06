@@ -48,10 +48,6 @@ static void	free_map(t_map *map)
 	}
 }
 
-/*
-** Destroys the images, the window, the display connection and finally
-** the MiniLibX context itself.
-*/
 static void	free_mlx_resources(t_game *game)
 {
 	int	i;
@@ -79,11 +75,6 @@ static void	free_mlx_resources(t_game *game)
 	}
 }
 
-/*
-** Releases every allocation owned by the game. It is safe to call this
-** function more than once because all pointers are set to NULL after
-** they are freed.
-*/
 void	free_game(t_game *game)
 {
 	if (!game)

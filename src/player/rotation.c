@@ -12,10 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** Rotates both the direction vector and the camera plane by the same
-** angle. The formulas are the standard 2D rotation matrix.
-*/
 void	rotate_player(t_game *game, double angle)
 {
 	t_player	*player;

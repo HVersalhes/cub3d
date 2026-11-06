@@ -37,19 +37,16 @@
 # define KEY_LEFT 65361
 # define KEY_RIGHT 65363
 
-/* exit and cleanup */
 void	error_exit(const char *message, t_game *game);
 void	free_game(t_game *game);
 void	quit_game(t_game *game);
 int		close_game(t_game *game);
 
-/* initialization */
 void	init_game_data(t_game *game);
 void	init_player(t_game *game);
 void	init_mlx(t_game *game);
 void	init_textures(t_game *game);
 
-/* parsing */
 int		is_line_empty(char *line);
 void	parse_cub_file(const char *file_path, t_game *game);
 int		parse_texture_line(char *line, t_game *game);
@@ -57,14 +54,12 @@ int		parse_color_line(char *line, t_game *game);
 void	parse_map(int fd, char *first_line, t_game *game);
 void	validate_map(t_game *game);
 
-/* raycasting */
 void	calculate_ray_vector(t_game *game, t_ray *ray, int x);
 void	init_ray_step(t_game *game, t_ray *ray);
 void	execute_dda(t_game *game, t_ray *ray);
 void	calculate_wall_projection(t_game *game, t_ray *ray);
 void	perform_raycasting(t_game *game);
 
-/* rendering */
 int		game_loop(t_game *game);
 void	render_frame(t_game *game);
 void	render_ceiling_floor(t_game *game);
@@ -72,7 +67,6 @@ void	draw_textured_wall_slice(t_game *game, t_ray *ray, int x);
 int		get_wall_texture_index(t_ray *ray);
 void	my_pixel_put(t_img *img, int x, int y, int color);
 
-/* player and events */
 void	update_player_movement(t_game *game);
 void	update_player_rotation(t_game *game);
 void	rotate_player(t_game *game, double angle);

@@ -12,10 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** Returns a copy of the path contained after the texture identifier.
-** Spaces, tabs and line endings around the path are removed.
-*/
 static char	*extract_path(char *line)
 {
 	int		start;
@@ -56,10 +52,6 @@ static int	texture_file_exists(char *path)
 	return (1);
 }
 
-/*
-** Stores the path only once. The file is opened here to report a clear
-** error before MiniLibX is initialized.
-*/
 static int	set_texture_path(char **destination, char *line, t_game *game)
 {
 	char	*path;

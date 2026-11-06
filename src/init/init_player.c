@@ -12,11 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** The direction vector points to the next cell in front of the player.
-** The plane vector is perpendicular to it and controls the horizontal
-** field of view (0.66 gives the usual 66 degree field of view).
-*/
 static void	set_player_north_south(t_player *player, char direction)
 {
 	if (direction == 'N')
@@ -61,10 +56,6 @@ static void	set_player_direction(t_player *player, char direction)
 		set_player_east_west(player, direction);
 }
 
-/*
-** Map coordinates are integers. Adding 0.5 puts the player in the
-** middle of the spawn tile instead of on its top-left corner.
-*/
 void	init_player(t_game *game)
 {
 	t_player	*player;

@@ -12,9 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** Loads one XPM texture and stores the data needed to read its pixels.
-*/
 static void	load_texture(t_game *game, int index, char *path)
 {
 	t_img	*img;
@@ -30,10 +27,6 @@ static void	load_texture(t_game *game, int index, char *path)
 		error_exit("Failed to read an XPM texture address", game);
 }
 
-/*
-** The texture array follows the order used in the map file:
-** 0 = north, 1 = south, 2 = west, 3 = east.
-*/
 void	init_textures(t_game *game)
 {
 	load_texture(game, 0, game->map.no_path);

@@ -18,10 +18,6 @@ static void	skip_spaces(char *str, int *index)
 		(*index)++;
 }
 
-/*
-** Reads one decimal channel. It returns a value between 0 and 255, or
-** -1 when the channel is missing or out of range.
-*/
 static int	parse_channel(char *str, int *index)
 {
 	int	value;
@@ -41,10 +37,6 @@ static int	parse_channel(char *str, int *index)
 	return (value);
 }
 
-/*
-** A valid color is exactly "R,G,B", with each channel in [0,255].
-** Only spaces and tabs are allowed around the numbers.
-*/
 static int	parse_rgb_color(char *line)
 {
 	int	index;

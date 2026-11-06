@@ -26,11 +26,6 @@ static void	free_map_nodes(t_map_node *head)
 	}
 }
 
-/*
-** Removes the line ending and appends the line to the linked list.
-** The first line of the map is passed by the caller and is already owned
-** by this function.
-*/
 static void	append_map_node(t_map_node **head, char *line, t_game *game)
 {
 	t_map_node	*new_node;
@@ -60,10 +55,6 @@ static void	append_map_node(t_map_node **head, char *line, t_game *game)
 	current->next = new_node;
 }
 
-/*
-** Reads every remaining line as part of the map. A blank line marks the
-** end of the map, so any non-empty line after it is an error.
-*/
 static void	read_all_map_lines(int fd, char *first_line, t_map_node **head,
 	t_game *game)
 {
@@ -94,10 +85,6 @@ static void	read_all_map_lines(int fd, char *first_line, t_map_node **head,
 	}
 }
 
-/*
-** Builds the rectangular grid used by the game. Shorter lines are padded
-** with spaces, which are treated as solid cells outside the walkable area.
-*/
 static void	build_rectangular_grid(t_map_node *head, t_game *game,
 	int count, int max_width)
 {

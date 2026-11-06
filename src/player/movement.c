@@ -29,9 +29,6 @@ static void	move_forward_backward(t_game *game, double *dx, double *dy)
 	}
 }
 
-/*
-** Strafe uses the camera plane, which is perpendicular to dir_*.
-*/
 static void	move_strafe(t_game *game, double *dx, double *dy)
 {
 	double	speed;
@@ -49,10 +46,6 @@ static void	move_strafe(t_game *game, double *dx, double *dy)
 	}
 }
 
-/*
-** X and Y are tested separately. If one axis is blocked, the player can
-** still slide along the wall on the other axis.
-*/
 static void	apply_movement(t_game *game, double dx, double dy)
 {
 	double	new_x;

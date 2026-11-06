@@ -12,11 +12,6 @@
 
 #include "cub3d.h"
 
-/*
-** Every error is printed in the format required by the subject:
-** "Error" followed by a useful message on stderr. If a game object is
-** available, all of its resources are released before exiting.
-*/
 void	error_exit(const char *message, t_game *game)
 {
 	ft_putendl_fd("Error", 2);
@@ -27,10 +22,6 @@ void	error_exit(const char *message, t_game *game)
 	exit(EXIT_FAILURE);
 }
 
-/*
-** Normal game exit. It is shared by the ESC key and the window close
-** button so both paths release the same resources.
-*/
 void	quit_game(t_game *game)
 {
 	free_game(game);

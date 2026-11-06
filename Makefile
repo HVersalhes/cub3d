@@ -44,7 +44,19 @@ HEADERS		= include/cub3d.h include/cub3d_structs.h libft/libft.h \
 LIBFT		= libft/libft.a
 MLX			= minilibx/libmlx.a
 
-all: $(NAME)
+CYAN		= \033[1;36m
+RESET		= \033[0m
+
+all: banner $(NAME)
+
+banner:
+	@printf "$(CYAN)"
+	@printf '%s\n' '   ________  ______ _____ ____              __  ______ _____   ______   ____  __  ___   ___   ____________ '
+	@printf '%s\n' '  / ____/ / / / __ )__  // __ \            /  |/  /   /__  /  / ____/  / __ \/ / / / | / / | / / ____/ __ \'
+	@printf '%s\n' ' / /   / / / / __  |/_ </ / / /  ______   / /|_/ / /| | / /  / __/    / /_/ / / / /  |/ /  |/ / __/ / /_/ /'
+	@printf '%s\n' '/ /___/ /_/ / /_/ /__/ / /_/ /  /_____/  / /  / / ___ |/ /__/ /___   / _, _/ /_/ / /|  / /|  / /___/ _, _/ '
+	@printf '%s\n' '\____/\____/_____/____/_____/           /_/  /_/_/  |_/____/_____/  /_/ |_|\____/_/ |_/_/ |_/_____/_/ |_|  '
+	@printf "$(RESET)\n"
 
 $(NAME): $(OBJ) $(LIBFT) $(MLX)
 	$(CC) $(OBJ) $(LDLIBS) -o $(NAME)
@@ -68,4 +80,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all banner clean fclean re

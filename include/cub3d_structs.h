@@ -15,10 +15,6 @@
 
 # include <stdbool.h>
 
-/*
-** MiniLibX image: the pixel buffer and the information needed to
-** address a pixel with the formula y * line_len + x * (bpp / 8).
-*/
 typedef struct s_img
 {
 	void	*img_ptr;
@@ -30,10 +26,6 @@ typedef struct s_img
 	int		height;
 }	t_img;
 
-/*
-** Current keyboard state. Movement is applied while a key is held,
-** so key presses only change these flags.
-*/
 typedef struct s_keys
 {
 	bool	w;
@@ -44,11 +36,6 @@ typedef struct s_keys
 	bool	rot_right;
 }	t_keys;
 
-/*
-** Player position and camera vectors. dir_* points where the player
-** looks and plane_* is perpendicular to it; together they define the
-** field of view used by the raycasting code.
-*/
 typedef struct s_player
 {
 	double	pos_x;
@@ -61,10 +48,6 @@ typedef struct s_player
 	double	rot_speed;
 }	t_player;
 
-/*
-** Everything read from the .cub file. The grid is rectangular: shorter
-** map lines are padded with spaces during parsing.
-*/
 typedef struct s_map
 {
 	char	**grid;
@@ -82,20 +65,12 @@ typedef struct s_map
 	int		player_spawn_y;
 }	t_map;
 
-/*
-** Temporary linked list used while reading map lines. The grid is only
-** allocated after the width and height are known.
-*/
 typedef struct s_map_node
 {
 	char				*line;
 	struct s_map_node	*next;
 }	t_map_node;
 
-/*
-** State of one cast ray. DDA fills map_x/map_y and the side values until
-** a wall is found; the projection values are then used to draw one column.
-*/
 typedef struct s_ray
 {
 	double	camera_x;
@@ -117,10 +92,6 @@ typedef struct s_ray
 	int		draw_end;
 }	t_ray;
 
-/*
-** Main game object. It owns the map, the player, the window, the
-** framebuffer and the four wall textures (NO, SO, WE, EA).
-*/
 typedef struct s_game
 {
 	void		*mlx_ptr;
