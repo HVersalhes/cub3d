@@ -16,7 +16,7 @@
 ** A line is considered empty when it has no printable content. Such
 ** lines are ignored before the map starts.
 */
-static int	is_line_empty(char *line)
+int	is_line_empty(char *line)
 {
 	int	i;
 
@@ -43,14 +43,13 @@ static void	validate_cub_extension(const char *path, t_game *game)
 ** Parses one non-empty line before the map. The current line is stored
 ** in the game so that error_exit can free it if a parser reports an error.
 */
-static void	handle_header_line(char *line, int fd, t_game *game)
+static void	handle_header_line(char *line, t_game *game)
 {
 	game->current_line = line;
 	if (!parse_texture_line(line, game) && !parse_color_line(line, game))
 	{
 		game->current_line = NULL;
 		free(line);
-		close(fd);
 		error_exit("Invalid element or map placed before headers", game);
 	}
 	game->current_line = NULL;
@@ -80,23 +79,28 @@ static void	process_scene_lines(int fd, t_game *game)
 			parse_map(fd, line, game);
 			return ;
 		}
-		handle_header_line(line, fd, game);
+		handle_header_line(line, game);
 		free(line);
 		line = get_next_line(fd);
 	}
-	close(fd);
 	error_exit("Incomplete scene file: map not found", game);
 }
 
 void	parse_cub_file(const char *file_path, t_game *game)
 {
-	int	fd;
-
 	validate_cub_extension(file_path, game);
-	fd = open(file_path, O_RDONLY);
-	if (fd < 0)
+	game->map_fd = open(file_path, O_DIRECTORY);
+	if (game->map_fd >= 0)
+	{
+		close(game->map_fd);
+		game->map_fd = -1;
+		error_exit("Provided path is a directory, not a file", game);
+	}
+	game->map_fd = open(file_path, O_RDONLY);
+	if (game->map_fd < 0)
 		error_exit("Cannot open .cub file", game);
-	process_scene_lines(fd, game);
-	close(fd);
+	process_scene_lines(game->map_fd, game);
+	close(game->map_fd);
+	game->map_fd = -1;
 	validate_map(game);
 }

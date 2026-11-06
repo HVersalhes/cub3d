@@ -43,6 +43,12 @@ static int	texture_file_exists(char *path)
 
 	if (!path)
 		return (0);
+	fd = open(path, O_DIRECTORY);
+	if (fd >= 0)
+	{
+		close(fd);
+		return (0);
+	}
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
 		return (0);

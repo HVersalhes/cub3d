@@ -75,7 +75,7 @@ static void	read_all_map_lines(int fd, char *first_line, t_map_node **head,
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
-		if (line[0] == '\n' || line[0] == '\r' || line[0] == '\0')
+		if (is_line_empty(line))
 		{
 			map_ended = 1;
 			free(line);

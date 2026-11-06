@@ -40,6 +40,10 @@ static int	calculate_texture_x(t_game *game, t_ray *ray, t_img *texture)
 		tex_x = texture->width - tex_x - 1;
 	if (ray->side == 1 && ray->ray_dir_y < 0)
 		tex_x = texture->width - tex_x - 1;
+	if (tex_x < 0)
+		tex_x = 0;
+	if (tex_x >= texture->width)
+		tex_x = texture->width - 1;
 	return (tex_x);
 }
 
@@ -60,25 +64,28 @@ static void	draw_column_pixels(t_game *game, t_ray *ray,
 {
 	double	step;
 	double	tex_pos;
-	int		tex_x;
+	int		tex[2];
 	int		y;
 	int		color;
 
-	tex_x = calculate_texture_x(game, ray, texture);
+	tex[0] = calculate_texture_x(game, ray, texture);
 	step = (double)texture->height / ray->line_height;
 	tex_pos = (ray->draw_start - game->frame.height / 2
 			+ ray->line_height / 2) * step;
 	y = ray->draw_start;
 	while (y <= ray->draw_end)
 	{
+		tex[1] = (int)tex_pos;
+		if (tex[1] < 0)
+			tex[1] = 0;
+		if (tex[1] >= texture->height)
+			tex[1] = texture->height - 1;
 		color = *(unsigned int *)(texture->data_addr
-				+ ((int)tex_pos % texture->height) * texture->line_len
-				+ tex_x * (texture->bpp / 8));
+				+ tex[1] * texture->line_len + tex[0] * (texture->bpp / 8));
 		if (ray->side == 1)
 			color = shade_color(color);
-		my_pixel_put(&game->frame, x, y, color);
+		my_pixel_put(&game->frame, x, y++, color);
 		tex_pos += step;
-		y++;
 	}
 }
 

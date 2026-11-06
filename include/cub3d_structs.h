@@ -131,6 +131,7 @@ typedef struct s_game
 	t_keys		keys;
 	t_img		textures[4];
 	char		*current_line;
+	int			map_fd;
 }	t_game;
 
 #endif

@@ -55,12 +55,12 @@ $(LIBFT):
 	$(MAKE) -C libft
 
 $(MLX):
-	$(MAKE) -C minilibx
+	@if [ -d minilibx ]; then $(MAKE) -C minilibx; fi
 
 clean:
 	rm -f $(OBJ)
 	$(MAKE) -C libft clean
-	$(MAKE) -C minilibx clean
+	@if [ -d minilibx ]; then $(MAKE) -C minilibx clean; fi
 
 fclean: clean
 	rm -f $(NAME)

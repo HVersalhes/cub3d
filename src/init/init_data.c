@@ -15,6 +15,7 @@
 void	init_game_data(t_game *game)
 {
 	ft_bzero(game, sizeof(t_game));
+	game->map_fd = -1;
 	game->map.floor_color = -1;
 	game->map.ceiling_color = -1;
 	game->map.player_spawn_x = -1;

@@ -50,6 +50,7 @@ void	init_mlx(t_game *game);
 void	init_textures(t_game *game);
 
 /* parsing */
+int		is_line_empty(char *line);
 void	parse_cub_file(const char *file_path, t_game *game);
 int		parse_texture_line(char *line, t_game *game);
 int		parse_color_line(char *line, t_game *game);

@@ -88,6 +88,11 @@ void	free_game(t_game *game)
 {
 	if (!game)
 		return ;
+	if (game->map_fd >= 0)
+	{
+		close(game->map_fd);
+		game->map_fd = -1;
+	}
 	get_next_line(-1);
 	free_map(&game->map);
 	if (game->current_line)
@@ -100,7 +105,7 @@ void	free_game(t_game *game)
 
 int	close_game(t_game *game)
 {
-	ft_printf("[cub3d] exit (X)\n");
+	ft_printf("[cub3D] exit (X)\n");
 	quit_game(game);
 	return (0);
 }
